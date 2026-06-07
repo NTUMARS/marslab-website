@@ -1,0 +1,362 @@
+---
+import { i18n } from "astro:config/client";
+import Base from "$layouts/Base.astro";
+import i18nit from "$i18n";
+import Icon from "$components/Icon.astro";
+import { people } from "$data/people";
+
+export async function getStaticPaths() {
+	return i18n!.locales.map(locale => ({ params: { locale: locale == i18n?.defaultLocale ? undefined : (locale as string) } }));
+}
+
+const { locale = i18n!.defaultLocale } = Astro.params;
+const t = i18nit(locale);
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+---
+
+<Base title={t("navigation.people") || "People"} {locale}>
+	<main class="flex flex-col grow people-page-container">
+		<h1 class="text-3xl font-bold mb-12">People</h1>
+		
+		<div class="people-grid">
+			{people.map((person) => {
+				const personId = person.name.toLowerCase().replace(/[^a-z]/g, '');
+				return (
+				<article class="person-card" id={personId}>
+					<div class="person-layout">
+						<!-- Left side: Image -->
+						<div class="person-image">
+							{person.image ? (
+								<img src={`${baseUrl}${person.image.replace(/^\//, '')}`} alt={person.name} loading="lazy" />
+							) : (
+								<div class="image-placeholder">
+									<span>{person.name.split(' ').map(n => n[0]).join('')}</span>
+								</div>
+							)}
+						</div>
+
+						<!-- Right side: Content -->
+						<div class="person-content">
+							<h2 class="person-name">{person.name}</h2>
+							<p class="person-position">{person.position}</p>
+							
+							<div class="person-bio-container">
+								<div class="person-bio">
+									<p>{person.bio}</p>
+									<p>{person.research}</p>
+								</div>
+								<button class="show-more-btn" aria-label="Show more">Show more</button>
+							</div>
+
+							<!-- Links -->
+							<div class="person-links">
+								{person.links.website && (
+									<a href={person.links.website} target="_blank" rel="noopener noreferrer" class="person-link">
+										<Icon name="lucide:globe" size={16} />
+										<span>Website</span>
+									</a>
+								)}
+								{person.links.email && (
+									<a href={`mailto:${person.links.email}`} class="person-link">
+										<Icon name="lucide:mail" size={16} />
+										<span>Email</span>
+									</a>
+								)}
+								{person.links.resume && (
+									<a href={person.links.resume} target="_blank" rel="noopener noreferrer" class="person-link">
+										<Icon name="lucide:file-search" size={16} />
+										<span>Résumé</span>
+									</a>
+								)}
+								{person.links.twitter && (
+									<a href={person.links.twitter} target="_blank" rel="noopener noreferrer" class="person-link">
+										<Icon name="simple-icons:x" size={16} />
+										<span>Twitter</span>
+									</a>
+								)}
+								{person.links.scholar && (
+									<a href={person.links.scholar} target="_blank" rel="noopener noreferrer" class="person-link">
+										<Icon name="lucide:graduation-cap" size={16} />
+										<span>Scholar</span>
+									</a>
+								)}
+								{person.links.github && (
+									<a href={person.links.github} target="_blank" rel="noopener noreferrer" class="person-link">
+										<Icon name="simple-icons:github" size={16} />
+										<span>GitHub</span>
+									</a>
+								)}
+								{person.links.linkedin && (
+									<a href={person.links.linkedin} target="_blank" rel="noopener noreferrer" class="person-link">
+										<Icon name="simple-icons:linkedin" size={16} />
+										<span>LinkedIn</span>
+									</a>
+								)}
+							</div>
+						</div>
+					</div>
+				</article>
+			)})}
+		</div>
+	</main>
+</Base>
+
+<style>
+	.people-page-container {
+		/* Break out of the parent 1000px constraint */
+		width: 100vw;
+		max-width: 100vw;
+		position: relative;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		padding: 0 4rem;
+	}
+
+	.people-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 3rem 3rem;
+		width: 100%;
+		max-width: 1600px;
+		margin: 0 auto;
+	}
+
+	.person-card {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.person-layout {
+		display: grid;
+		grid-template-columns: 200px 1fr;
+		gap: 1.5rem;
+		align-items: start;
+	}
+
+	.person-image {
+		width: 200px;
+		height: 200px;
+		border-radius: 4px;
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+
+	.person-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.image-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, var(--block-color) 0%, var(--shadow-color) 100%);
+		font-size: 3rem;
+		font-weight: 600;
+		color: var(--secondary-color);
+		text-transform: uppercase;
+	}
+
+	.person-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding-top: 0.25rem;
+	}
+
+	.person-name {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	.person-position {
+		font-size: 1rem;
+		color: var(--secondary-color);
+		margin: 0;
+		font-weight: 500;
+	}
+
+	.person-bio-container {
+		position: relative;
+		margin-top: 0.5rem;
+	}
+
+	.person-bio {
+		max-height: 6.4rem;
+		overflow: hidden;
+		position: relative;
+		transition: max-height 0.3s ease;
+	}
+
+	.person-bio-container.has-overflow .person-bio:not(.expanded)::after {
+		content: "";
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 2.4rem;
+		background: linear-gradient(to bottom, transparent, var(--background-color));
+		pointer-events: none;
+	}
+
+	.person-bio.expanded {
+		max-height: none;
+	}
+
+	.person-bio p {
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: var(--primary-color);
+		margin: 0;
+	}
+
+	.person-bio p + p {
+		margin-top: 0.75rem;
+	}
+
+	.show-more-btn {
+		display: none;
+		margin-top: 0.5rem;
+		background: none;
+		border: none;
+		color: #A51C30;
+		font-size: 0.9rem;
+		font-weight: 500;
+		cursor: pointer;
+		padding: 0;
+		text-decoration: underline;
+		transition: opacity 0.2s ease;
+	}
+
+	.show-more-btn:hover {
+		opacity: 0.7;
+	}
+
+	.person-bio-container.has-overflow .show-more-btn {
+		display: block;
+	}
+
+	.person-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 1rem;
+	}
+
+	.person-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: var(--block-color);
+		color: #A51C30;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 0.9rem;
+		font-weight: 500;
+		transition: background 0.2s ease, transform 0.1s ease;
+	}
+
+	.person-link:hover {
+		background: var(--shadow-color);
+		transform: scale(1.02);
+	}
+
+	.person-link :global(figure) {
+		display: flex;
+		align-items: center;
+		margin: 0;
+	}
+
+	.person-link :global(svg) {
+		width: 16px;
+		height: 16px;
+		flex-shrink: 0;
+	}
+
+	/* Responsive Design - Conservative breakpoints */
+	
+	/* Switch to single column before things get squashed */
+	@media (max-width: 1150px) {
+		.people-grid {
+			grid-template-columns: 1fr;
+			gap: 3rem;
+		}
+	}
+
+	/* Adjust layout for tablets */
+	@media (max-width: 900px) {
+		.people-page-container {
+			padding: 0 2rem;
+		}
+
+		.person-layout {
+			gap: 1.25rem;
+		}
+
+		.person-image {
+			width: 180px;
+			height: 180px;
+		}
+
+		.person-layout {
+			grid-template-columns: 180px 1fr;
+		}
+	}
+
+	/* Mobile layout */
+	@media (max-width: 768px) {
+		.people-page-container {
+			padding: 0 1rem;
+		}
+
+		.person-layout {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+
+		.person-image {
+			width: 200px;
+			height: 200px;
+			margin: 0 auto;
+		}
+
+		.image-placeholder {
+			font-size: 2.5rem;
+		}
+
+		.person-content {
+			text-align: center;
+		}
+
+		.person-name {
+			font-size: 1.25rem;
+		}
+
+		.person-position {
+			font-size: 0.9rem;
+		}
+
+		.person-bio p {
+			font-size: 0.9rem;
+			text-align: left;
+		}
+
+		.person-links {
+			justify-content: center;
+		}
+
+		.people-grid {
+			gap: 2.5rem;
+		}
+	}
+</style>

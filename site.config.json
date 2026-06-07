@@ -1,0 +1,19 @@
+{
+	"title": "MARS Lab",
+	"prologue": "Multimodal embodied AI and Robotic Systems Lab at Nanyang Technological University, Singapore.",
+	"author": {
+		"name": "MARS Lab",
+		"email": "jianfei.yang@ntu.edu.sg",
+		"link": "https://marslab.tech"
+	},
+	"description": "Multimodal embodied AI and Robotic Systems Lab at Nanyang Technological University, Singapore.",
+	"copyright": {
+		"type": "CC BY-NC-ND 4.0",
+		"year": "2026"
+	},
+	"feed": {
+		"section": "*",
+		"limit": 20
+	},
+	"gaMeasurementId": ""
+}

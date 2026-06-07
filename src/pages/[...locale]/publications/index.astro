@@ -1,0 +1,427 @@
+---
+import { getCollection } from "astro:content";
+import { i18n } from "astro:config/client";
+import Base from "$layouts/Base.astro";
+import Icon from "$components/Icon.astro";
+import i18nit from "$i18n";
+
+export async function getStaticPaths() {
+	// Create path for each locale, omitting default locale from URL
+	return i18n!.locales.map(locale => ({ params: { locale: locale == i18n?.defaultLocale ? undefined : (locale as string) } }));
+}
+
+const { locale = i18n!.defaultLocale } = Astro.params;
+
+const t = i18nit(locale);
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+const publications = await getCollection("publications", publication => !publication.data.draft);
+
+// Canonical venue names — maps scraped variants to the display name used everywhere
+const VENUE_CANONICAL: Record<string, string> = {
+	'arXiv': 'arXiv Preprint',
+	'bioRxiv': 'bioRxiv Preprint',
+	'CORL': 'CoRL',
+	'Corl': 'CoRL',
+	'Neurips': 'NeurIPS',
+	'neurips': 'NeurIPS',
+	'CVPR ': 'CVPR',
+};
+
+// Strip trailing year + any qualifier like (Oral)/(Spotlight), then apply canonical map
+function normalizeVenue(raw: string): string {
+	const stripped = raw.replace(/\s+20\d{2}.*$/, '').trim();
+	return VENUE_CANONICAL[stripped] ?? stripped;
+}
+
+// Priority venues to show at the top of the filter
+const SHOW_AWARDS = false;
+
+const priorityVenues = ["arXiv Preprint", "NeurIPS", "ICLR", "ICML", "RSS", "CoRL", "CVPR", "ICCV", "ECCV", "CoLM"];
+
+const getVenuePriority = (venue: string) => {
+	const index = priorityVenues.indexOf(normalizeVenue(venue));
+	return index === -1 ? priorityVenues.length : index;
+};
+
+// Sort by: year desc → venue priority → venue name → title
+const sortedPublications = publications.sort((a, b) => {
+	if (b.data.year !== a.data.year) return b.data.year - a.data.year;
+	const pa = getVenuePriority(a.data.venue);
+	const pb = getVenuePriority(b.data.venue);
+	if (pa !== pb) return pa - pb;
+	if (pa === priorityVenues.length) {
+		const vc = normalizeVenue(a.data.venue).localeCompare(normalizeVenue(b.data.venue));
+		if (vc !== 0) return vc;
+	}
+	return a.data.title.localeCompare(b.data.title);
+});
+
+// Build deduplicated, normalized venue list for the filter sidebar
+const years = Array.from(new Set(publications.map(pub => pub.data.year))).sort((a, b) => b - a);
+const allVenues = Array.from(new Set(publications.map(pub => normalizeVenue(pub.data.venue)).filter(Boolean)));
+const topVenues = priorityVenues.filter(v => allVenues.includes(v));
+const otherVenues = allVenues.filter(v => !priorityVenues.includes(v)).sort();
+const venues = [...topVenues, ...otherVenues];
+---
+
+<Base title={t("navigation.publications") || "Publications"} {locale}>
+	<main class="flex flex-col grow">
+		<h1 class="text-3xl font-bold mb-8">Publications</h1>
+		
+		<div class="publications-container">
+			<!-- Publications Grid -->
+			<div class="publications-main">
+				<div class="publications-grid">
+					{sortedPublications.map((pub) => (
+						<article class="publication-card" data-year={pub.data.year} data-venue={normalizeVenue(pub.data.venue)}>
+						<div class="publication-image">
+							{pub.data.image ? (
+								<img src={`${baseUrl}${pub.data.image.replace(/^\//, '')}`} alt={pub.data.title} loading="lazy" />
+							) : (
+								<div class="placeholder-image">
+									<span class="year-badge">{pub.data.year}</span>
+								</div>
+							)}
+						</div>
+							
+							<div class="publication-content">
+								<h2 class="publication-title">{pub.data.title}</h2>
+								
+							<p class="publication-venue">
+								<strong>{normalizeVenue(pub.data.venue)}</strong>
+								{pub.data.year && ` • ${pub.data.year}`}
+								{SHOW_AWARDS && pub.data.award && <span class="award-badge">{pub.data.award}</span>}
+							</p>
+								
+								<p class="publication-authors">
+									{pub.data.authors.join(', ')}
+								</p>
+								
+								{(pub.data.paper || pub.data.website || pub.data.code) && (
+									<div class="publication-links">
+										{pub.data.paper && (
+											<a href={pub.data.paper} target="_blank" rel="noopener noreferrer" class="pub-link">
+												<Icon name="lucide:file-text" size={16} />
+												<span>Paper</span>
+											</a>
+										)}
+										{pub.data.website && (
+											<a href={pub.data.website} target="_blank" rel="noopener noreferrer" class="pub-link">
+												<Icon name="lucide:globe" size={16} />
+												<span>Website</span>
+											</a>
+										)}
+										{pub.data.code && (
+											<a href={pub.data.code} target="_blank" rel="noopener noreferrer" class="pub-link">
+												<Icon name="lucide:code" size={16} />
+												<span>Code</span>
+											</a>
+										)}
+									</div>
+								)}
+							</div>
+						</article>
+					))}
+				</div>
+			</div>
+
+			<!-- Sidebar on the right -->
+			<aside class="publications-sidebar">
+				<section class="filter-section">
+					<h3>Venue</h3>
+					<div class="filter-group filter-scrollable">
+						{venues.map((venue) => (
+							<label class="filter-label">
+								<input type="checkbox" class="filter-checkbox venue-filter" data-value={venue} />
+								<span>{venue}</span>
+							</label>
+						))}
+					</div>
+				</section>
+
+				<section class="filter-section">
+					<h3>Year</h3>
+					<div class="filter-group filter-scrollable">
+						{years.map((year) => (
+							<label class="filter-label">
+								<input type="checkbox" class="filter-checkbox year-filter" data-value={year} />
+								<span>{year}</span>
+							</label>
+						))}
+					</div>
+				</section>
+			</aside>
+		</div>
+	</main>
+</Base>
+
+<style>
+	.publications-container {
+		display: grid;
+		grid-template-columns: 1fr 200px;
+		gap: 3rem;
+		width: 100%;
+	}
+
+	/* Sidebar Styles - Clean and minimal */
+	.publications-sidebar {
+		position: sticky;
+		top: 1rem;
+		height: fit-content;
+	}
+
+	.filter-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.filter-section h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		margin: 0 0 0.25rem 0;
+	}
+
+	.filter-group {
+		display: flex;
+		flex-direction: column !important;
+		gap: 0.4rem;
+		width: 100%;
+	}
+
+	.filter-scrollable {
+		max-height: 250px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-right: 0.5rem;
+	}
+
+	.filter-label {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center;
+		gap: 0.5rem;
+		cursor: pointer;
+		font-size: 0.875rem;
+		color: var(--secondary-color);
+		user-select: none;
+		padding: 0.15rem 0;
+		white-space: nowrap;
+		width: 100%;
+	}
+
+	.filter-label:hover {
+		color: var(--primary-color);
+	}
+
+	.filter-label span {
+		flex: 1;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-underline-offset: 2px;
+		transition: text-decoration-color 0.15s ease;
+	}
+
+	.filter-label:hover span {
+		text-decoration-color: var(--primary-color);
+	}
+
+	.filter-checkbox {
+		cursor: pointer;
+		margin: 0;
+		width: 14px;
+		height: 14px;
+		flex-shrink: 0;
+		accent-color: var(--primary-color);
+	}
+
+	/* Publications Grid */
+	.publications-main {
+		min-width: 0;
+	}
+
+	.publications-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 2rem;
+		width: 100%;
+	}
+
+	.publication-card {
+		display: flex;
+		flex-direction: column;
+		background: var(--background-color);
+		border: 1px solid var(--shadow-color);
+		border-radius: 8px;
+		overflow: hidden;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.publication-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.publication-image {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		background: var(--block-color);
+		position: relative;
+	}
+
+	.publication-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	.placeholder-image {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, var(--block-color) 0%, var(--shadow-color) 100%);
+	}
+
+	.year-badge {
+		font-size: 2rem;
+		font-weight: bold;
+		color: var(--secondary-color);
+	}
+
+	.publication-content {
+		padding: 1.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		flex-grow: 1;
+	}
+
+	.publication-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		line-height: 1.4;
+		color: var(--primary-color);
+		margin: 0;
+	}
+
+	.publication-venue {
+		font-size: 0.9rem;
+		color: var(--secondary-color);
+		margin: 0;
+	}
+
+	.award-badge {
+		display: inline-block;
+		padding: 0.15rem 0.5rem;
+		margin-left: 0.5rem;
+		background-color: #ffe5e5;
+		color: #A51C30;
+		font-weight: 600;
+		font-size: 0.85rem;
+		border-radius: 4px;
+	}
+
+	.publication-authors {
+		font-size: 0.85rem;
+		color: var(--remark-color);
+		line-height: 1.5;
+		margin: 0;
+	}
+
+	.publication-links {
+		display: flex;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		margin-top: auto;
+		padding-top: 0.5rem;
+	}
+
+	.pub-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.35rem 0.85rem;
+		background: var(--block-color);
+		color: #A51C30;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 0.85rem;
+		font-weight: 500;
+		transition: background 0.2s ease, transform 0.1s ease;
+	}
+
+	.pub-link:hover {
+		background: var(--shadow-color);
+		transform: scale(1.05);
+	}
+
+	.pub-link figure {
+		margin: 0;
+		line-height: 0;
+	}
+
+	/* Mobile Responsive */
+	@media (max-width: 1024px) {
+		.publications-container {
+			grid-template-columns: 1fr;
+		}
+
+		.publications-sidebar {
+			position: relative;
+			top: 0;
+			order: -1;
+			margin-bottom: 2rem;
+		}
+
+		.filter-section {
+			margin-bottom: 1.5rem;
+		}
+
+		.filter-scrollable {
+			max-height: 150px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.publications-grid {
+			grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+			gap: 1.5rem;
+		}
+
+		.publication-content {
+			padding: 1rem;
+		}
+
+		.publication-title {
+			font-size: 1rem;
+		}
+
+		.filter-label {
+			font-size: 0.85rem;
+		}
+	}
+</style>
+
+<script>
+	const cards = Array.from(document.querySelectorAll<HTMLElement>('.publication-card'));
+
+	function applyFilters() {
+		const checkedVenues = Array.from(document.querySelectorAll<HTMLInputElement>('.venue-filter:checked')).map(el => el.dataset.value!);
+		const checkedYears = Array.from(document.querySelectorAll<HTMLInputElement>('.year-filter:checked')).map(el => el.dataset.value!);
+
+		for (const card of cards) {
+			const venueMatch = checkedVenues.length === 0 || checkedVenues.includes(card.dataset.venue!);
+			const yearMatch = checkedYears.length === 0 || checkedYears.includes(card.dataset.year!);
+			card.style.display = venueMatch && yearMatch ? '' : 'none';
+		}
+	}
+
+	document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', applyFilters));
+</script>
+
