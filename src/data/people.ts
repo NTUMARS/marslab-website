@@ -110,9 +110,10 @@ export const people = [
 		name: "Jingliang Li",
 		position: "PhD Student",
 		image: "/people/jingliang-li.jpg",
-		bio: "Jingliang Li is a first-year Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang in the MARS Lab. He received his B.Eng. from Northwestern Polytechnical University, and was previously a research intern at The Chinese University of Hong Kong and an exchange student at Efrei Paris.",
+		bio: "Jingliang Li is a first-year Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang in the MARS Lab. He received his B.Eng. from Northwestern Polytechnical University.",
 		research: "His research focuses on embodied AI, with particular interests in 3D affordance reasoning, world models for decision-making, and dexterous manipulation.",
 		links: {
+			website: "https://lorenzo-0-0.github.io/",
 			email: "jinglian001@e.ntu.edu.sg",
 			scholar: "https://scholar.google.com/citations?user=U_06-gYAAAAJ&hl=zh-CN",
 			github: "https://github.com/Lorenzo-0-0",
