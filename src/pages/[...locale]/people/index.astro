@@ -3,7 +3,7 @@ import { i18n } from "astro:config/client";
 import Base from "$layouts/Base.astro";
 import i18nit from "$i18n";
 import Icon from "$components/Icon.astro";
-import { people } from "$data/people";
+import { people, alumni } from "$data/people";
 
 export async function getStaticPaths() {
 	return i18n!.locales.map(locale => ({ params: { locale: locale == i18n?.defaultLocale ? undefined : (locale as string) } }));
@@ -98,10 +98,77 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 				</article>
 			)})}
 		</div>
+
+		<section class="alumni-section">
+			<h2 class="alumni-heading">Alumni</h2>
+			<p class="alumni-intro">We thank all MARS Lab alumni for their invaluable contributions and wish them bright futures ahead.</p>
+			{alumni.map((cohort) => (
+				<div class="alumni-group">
+					<h3 class="alumni-group-title">{cohort.group}</h3>
+					<ul class="alumni-list">
+						{cohort.members.map((m) => (
+							<li>
+								<strong>{m.name}</strong>{m.note ? ` (${m.note})` : ""}{m.topic ? ` — ${m.topic}` : ""} <span class="alumni-period">({m.period})</span>
+							</li>
+						))}
+					</ul>
+				</div>
+			))}
+		</section>
 	</main>
 </Base>
 
 <style>
+	/* Alumni — plain text list */
+	.alumni-section {
+		margin-top: 4rem;
+	}
+
+	.alumni-heading {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: var(--primary-color);
+		margin: 0 0 0.75rem 0;
+	}
+
+	.alumni-intro {
+		color: var(--secondary-color);
+		margin: 0 0 1.5rem 0;
+	}
+
+	.alumni-group {
+		margin-bottom: 1.75rem;
+	}
+
+	.alumni-group-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		margin: 0 0 0.6rem 0;
+	}
+
+	.alumni-list {
+		list-style: disc;
+		padding-left: 1.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.alumni-list li {
+		color: var(--secondary-color);
+		line-height: 1.6;
+	}
+
+	.alumni-list strong {
+		color: var(--primary-color);
+	}
+
+	.alumni-period {
+		color: var(--remark-color);
+		white-space: nowrap;
+	}
+
 	.people-page-container {
 		/* Break out of the parent 1000px constraint */
 		width: 100vw;

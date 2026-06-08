@@ -121,18 +121,6 @@ export const people = [
 		}
 	},
 	{
-		name: "Shijia Han",
-		position: "PhD Candidate",
-		image: "/people/shijia-han.jpg",
-		bio: "Shijia Han is a PhD candidate at the NTU MARS Lab, supervised by Prof. Jianfei Yang.",
-		research: "His research interests include human motion capture, humanoid robot teleoperation, and locomotion, focusing on learning-based whole-body control and motion generation for humanoid robots.",
-		links: {
-			email: "shijia003@e.ntu.edu.sg",
-			github: "https://github.com/HanShijia999",
-			linkedin: "https://www.linkedin.com/in/shijia-han-602873235/"
-		}
-	},
-	{
 		name: "Tuo An",
 		position: "PhD Student",
 		image: "/people/tuo-an.jpg",
@@ -185,18 +173,6 @@ export const people = [
 		}
 	},
 	{
-		name: "Yanshuo Lu",
-		position: "PhD Student",
-		image: "/people/yanshuo-lu.jpg",
-		bio: "Yanshuo Lu is an incoming Ph.D. student at the NTU MARS Lab, advised by Prof. Jianfei Yang. He holds a bachelor's degree from Shandong University and an MSc from Nanyang Technological University.",
-		research: "His research focuses on human–robot interaction, exploring interaction paradigms in real-world and simulated industrial scenarios. By incorporating multimodal techniques, psychological modeling, and model acceleration, he aims to optimize the experience of human–robot collaboration.",
-		links: {
-			email: "YANSHUO001@e.ntu.edu.sg",
-			github: "https://github.com/Lu-Yanshuo",
-			linkedin: "https://www.linkedin.com/in/yanshuo-lu-3113ab345/"
-		}
-	},
-	{
 		name: "Yunjiao Zhou",
 		position: "PhD Student (co-supervised)",
 		image: "/people/yunjiao-zhou.jpg",
@@ -214,6 +190,18 @@ export const people = [
 		links: {
 			email: "CHENXI003@ntu.edu.sg",
 			linkedin: "https://www.linkedin.com/in/chenxi-jiang-2887b6358"
+		}
+	},
+	{
+		name: "Shijia Han",
+		position: "MEng Student",
+		image: "/people/shijia-han.jpg",
+		bio: "Shijia Han is an MEng student at the NTU MARS Lab, supervised by Prof. Jianfei Yang.",
+		research: "His research interests include human motion capture, humanoid robot teleoperation, and locomotion, focusing on learning-based whole-body control and motion generation for humanoid robots.",
+		links: {
+			email: "shijia003@e.ntu.edu.sg",
+			github: "https://github.com/HanShijia999",
+			linkedin: "https://www.linkedin.com/in/shijia-han-602873235/"
 		}
 	},
 	// Research Assistants
@@ -265,4 +253,48 @@ export const people = [
 			scholar: "https://scholar.google.com/citations?user=F6HMENYAAAAJ&hl=en"
 		}
 	},
+	{
+		name: "Yanshuo Lu",
+		position: "Research Assistant",
+		image: "/people/yanshuo-lu.jpg",
+		bio: "Yanshuo Lu is a Research Assistant at the NTU MARS Lab, advised by Prof. Jianfei Yang. He holds a bachelor's degree from Shandong University and an MSc from Nanyang Technological University.",
+		research: "His research focuses on human–robot interaction, exploring interaction paradigms in real-world and simulated industrial scenarios. By incorporating multimodal techniques, psychological modeling, and model acceleration, he aims to optimize the experience of human–robot collaboration.",
+		links: {
+			email: "YANSHUO001@e.ntu.edu.sg",
+			github: "https://github.com/Lu-Yanshuo",
+			linkedin: "https://www.linkedin.com/in/yanshuo-lu-3113ab345/"
+		}
+	},
+];
+
+// Alumni — plain-text list. `note` = current affiliation / destination, `topic` = thesis/project topic.
+export const alumni = [
+	{
+		group: "Master of Science (MSc)",
+		members: [
+			{ name: "Wu Tao", note: "NTU, PhD", topic: "Noisy Embodied Question Answering", period: "2024–2025" },
+			{ name: "Zuo Jia", note: "XPENG Humanoid Robot", topic: "mmWave Radar Sensing for ECG", period: "2023–2024" },
+			{ name: "Li Han", note: "BYD", topic: "3D Pose Estimation in Hyperbolic Space", period: "2023–2024" },
+			{ name: "Ma Zhenduo", note: "AVIC Aerodynamics Research Institute", topic: "WiFi Sensing using WiFi-7", period: "2023–2024" },
+			{ name: "Huang Runxi", note: "HKUST, PhD", topic: "Wireless Human Pose Rendering", period: "2023–2024" },
+			{ name: "Huang Shunyu", note: "TSMC", topic: "Graph Transfer Learning for Cross-Modal Supervision", period: "2022–2024" },
+			{ name: "Wang Junfei", note: "HUAWEI", topic: "Federated Learning with Blockchains", period: "2022–2024" },
+			{ name: "Tang Shijie", note: "National Intellectual Property Administration", topic: "Bimodal Learning for WiFi-Vision Human Pose Estimation", period: "2022–2023" },
+			{ name: "Yan Mingxue", note: "NTU, PhD", topic: "Vital Sign Detection via mmWave Radar and Deep Learning", period: "2022–2023" },
+			{ name: "Deng Lang", note: "UESTC, PhD", topic: "WiFi and Camera Fusion for Smart Sensing", period: "2021–2022" },
+			{ name: "Zhou Yunjiao", note: "NTU, PhD", topic: "Multimodal Learning for Road Segmentation in Autonomous Driving", period: "2021–2022" },
+			{ name: "Yang Zhiyuan", note: "NTU, PhD", topic: "Point Cloud Model Compression", period: "2021–2022" },
+			{ name: "Shi Mengqi", topic: "Adversarial Learning for Multimodal Segmentation", period: "2021–2022" },
+			{ name: "Hu Jiaxing", note: "Alibaba", topic: "WiFi-based Respiration Detection", period: "2020–2021" },
+			{ name: "Lyu Qi", note: "HUAWEI", topic: "Real-time WiFi Sensing System", period: "2020–2021" }
+		]
+	},
+	{
+		group: "Undergraduate (Final Year Project)",
+		members: [
+			{ name: "Chen Xinyan", note: "Scientist, SAP", topic: "Multimodal Wireless Sensing", period: "2023" },
+			{ name: "Wang Zijie", note: "NTU, PhD", period: "2019" },
+			{ name: "Pan Xingmeng", note: "RWE Supply & Trading GmbH", period: "2019" }
+		]
+	}
 ];
