@@ -7,7 +7,7 @@ const gaEnabled = !!gaId && /^G-[A-Z0-9]+$/.test(gaId) && gaId !== "G-XXXXXXXXXX
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 ---
 
-<html lang={Astro.currentLocale}>
+<html lang={Astro.currentLocale} class="no-js">
 	<head>
 		<title>{subtitle && `${subtitle} |`} {title}</title>
 		<meta name="description" content={description} />
@@ -45,6 +45,11 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 		<script is:inline>
 			// Always use light theme
 			document.documentElement.dataset.theme = "light";
+			// Flip no-js -> js before first paint. This persists across Swup navigations (the
+			// <html> element is never swapped), so any html.no-js-gated fallback stays inert
+			// once JS has loaded — including after navigating back to a page via Swup.
+			document.documentElement.classList.remove("no-js");
+			document.documentElement.classList.add("js");
 		</script>
 
 		{gaEnabled && (

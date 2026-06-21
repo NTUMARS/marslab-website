@@ -148,13 +148,6 @@ const partners = [
 							</a>
 						))}
 					</div>
-					<noscript>
-						<style>
-							.cf-stage .cf-nodes { opacity: 1 !important; position: static; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; height: 100%; padding: 20px; box-sizing: border-box; }
-							.cf-stage .cf-node { position: static !important; transform: none !important; }
-							.cf-stage .cf-lines, .cf-stage .cf-dust { display: none; }
-						</style>
-					</noscript>
 				</div>
 			</div>
 
@@ -595,6 +588,18 @@ const partners = [
 	}
 </style>
 
+<!-- No-JS fallback for the member honeycomb. Gated on `html.no-js` (App.astro's boot script
+	 flips it to `.js` before first paint), so it NEVER applies once JS is running — including
+	 after a Swup navigation. This deliberately replaces the old inline <noscript><style>:
+	 Swup fetches pages with DOMParser (scripting disabled), which turns a <noscript>'s inner
+	 <style> into a LIVE style element, and on swap-in it force-collapsed the live honeycomb
+	 into a static grid (position:static / transform:none !important). -->
+<style is:global>
+	html.no-js .cf-stage .cf-nodes { opacity: 1 !important; position: static; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; height: 100%; padding: 20px; box-sizing: border-box; }
+	html.no-js .cf-stage .cf-node { position: static !important; transform: none !important; }
+	html.no-js .cf-stage .cf-lines, html.no-js .cf-stage .cf-dust { display: none; }
+</style>
+
 <script>
 	// In-memory init guards. CRITICAL: these MUST be JS WeakSets, NOT DOM attributes.
 	// Swup caches the *initial* page by snapshotting the live DOM — which already carries
@@ -768,7 +773,7 @@ const partners = [
 				const d = Math.hypot(p.x - cx, p.y - cy);
 				const z = isPI ? 1 : clamp(1 - d / maxD, 0, 1);   // centre nearer → vivid; edges recede
 				const sm = z * z * (3 - 2 * z);                   // smoothstep → clear depth-of-field
-				const o = isPI ? 1 : 0.66 + 0.34 * sm;
+				const o = 1;                                      // every avatar at full brightness (no depth dimming)
 				const amp = (compact ? 0.9 : 1.4) * (isPI ? 0.6 : 1);   // calm, weightless drift
 				el.style.width = csize + 'px'; el.style.height = csize + 'px';
 				el.style.setProperty('--cf-o', o.toFixed(3));
