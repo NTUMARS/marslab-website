@@ -24,8 +24,7 @@
 			&:hover p,
 			&.location p {
 				color: #fff8ee;
-				/* bold Computer Modern on the gold pill; resting words stay regular */
-				font-weight: 700;
+				/* uniform regular Computer Modern — no bold anywhere (per user) */
 				background: linear-gradient(150deg, var(--accent) 0%, var(--accent-deep) 100%);
 				box-shadow:
 					inset 0 1px 0 rgba(255, 244, 224, 0.28),
@@ -61,8 +60,9 @@
 						background-color: var(--background-color);
 					}
 
-					&.location {
-						font-weight: bold;
+					&.location p {
+						/* no bold anywhere — mark the active item with accent colour instead */
+						color: var(--accent);
 					}
 				}
 			}
