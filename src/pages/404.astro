@@ -3,17 +3,27 @@ import Base from "$layouts/Base.astro";
 ---
 
 <Base title="404">
-	{/* Catch-all redirect for the OLD site's per-member pages (/members/<slug>.html),
-	    which search engines still have indexed. The new site lists everyone on /people
-	    with card ids = name lowercased, letters only — so the old hyphenated slug maps
-	    straight onto the anchor by stripping non-letters. */}
+	{/* Catch-all for the OLD site's URLs still indexed by search engines. The new
+	    Astro site reorganised everything, so old links 404. Two rules:
+	      1. per-member pages  /members/<slug>.html  -> /people/#<anchor>
+	         (card ids = name lowercased to letters only, so the hyphenated old slug
+	          maps straight onto the anchor by stripping non-letters)
+	      2. old top-level pages (/team, /home, /about, ...) -> the closest new page */}
 	<script is:inline>
 		(function () {
-			var m = location.pathname.match(/\/members\/(.+?)\.html?$/i);
-			if (m) {
+			var path = location.pathname.replace(/\/+$/, "");            // drop trailing slash(es)
+			var m = path.match(/\/members\/(.+?)(?:\.html?)?$/i);        // 1. per-member page
+			if (m && m[1]) {
 				var anchor = decodeURIComponent(m[1]).toLowerCase().replace(/[^a-z]/g, "");
-				location.replace("/people/" + (anchor ? "#" + anchor : ""));
+				if (anchor) { location.replace("/people/#" + anchor); return; }
 			}
+			var key = path.replace(/\.html?$/i, "").toLowerCase();      // 2. old top-level page
+			var map = {
+				"/team": "/people/", "/members": "/people/",
+				"/home": "/", "/about": "/", "/news": "/", "/research": "/",
+				"/join": "/contact/"
+			};
+			if (map[key]) location.replace(map[key]);
 		})();
 	</script>
 	<main class="contents">
