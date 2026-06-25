@@ -3,7 +3,7 @@ import { i18n } from "astro:config/client";
 import Base from "$layouts/Base.astro";
 import i18nit from "$i18n";
 import Icon from "$components/Icon.astro";
-import { people, alumni } from "$data/people";
+import { people, students, alumni } from "$data/people";
 
 export async function getStaticPaths() {
 	return i18n!.locales.map(locale => ({ params: { locale: locale == i18n?.defaultLocale ? undefined : (locale as string) } }));
@@ -12,6 +12,9 @@ export async function getStaticPaths() {
 const { locale = i18n!.defaultLocale } = Astro.params;
 const t = i18nit(locale);
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// How many students to show before the "Show all" toggle
+const STUDENT_PREVIEW = 3;
 
 // Anchor id used by the home-page photo links (/people#<id>)
 const personId = (name: string) => name.toLowerCase().replace(/[^a-z]/g, '');
@@ -73,7 +76,7 @@ if (others.length) sections.push({ title: "Team", members: others });
 					<div class="pi-info">
 						<h3 class="pi-name">{pi.name}</h3>
 						<p class="pi-role">{pi.position}</p>
-						{pi.research && <p class="pi-research">{pi.research}</p>}
+						{(pi.preview || pi.research) && <p class="pi-research">{pi.preview || pi.research}</p>}
 						{socialLinks(pi).length > 0 && (
 							<div class="person-links">
 								{socialLinks(pi).map((l) => (
@@ -127,20 +130,60 @@ if (others.length) sections.push({ title: "Team", members: others });
 		))}
 
 		<section class="alumni-section">
-			<h2 class="alumni-heading">Alumni</h2>
-			<p class="alumni-intro">We thank all MARS Lab alumni for their invaluable contributions and wish them bright futures ahead.</p>
-			{alumni.map((cohort) => (
-				<div class="alumni-group">
-					<h3 class="alumni-group-title">{cohort.group}</h3>
-					<ul class="alumni-list">
-						{cohort.members.map((m) => (
+			<h2 class="alumni-heading">Students</h2>
+
+			{students.map((group) => (
+				<div class="student-group">
+					<h3 class="alumni-group-title">{group.group}</h3>
+					<ul class="alumni-list student-list">
+						{group.members.slice(0, STUDENT_PREVIEW).map((m) => (
 							<li>
-								<strong>{m.name}</strong>{m.note ? ` (${m.note})` : ""}{m.topic ? ` — ${m.topic}` : ""} <span class="alumni-period">({m.period})</span>
+								<strong>{m.name}</strong> <span class="alumni-period">(Advisor: {m.advisor})</span>
 							</li>
 						))}
 					</ul>
+					{group.members.length > STUDENT_PREVIEW && (
+						<details class="student-more">
+							<summary class="student-toggle">
+								<span class="student-toggle-more">Show all <svg class="student-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+								<span class="student-toggle-less">Show less <svg class="student-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+							</summary>
+							<ul class="alumni-list student-list student-list-rest">
+								{group.members.slice(STUDENT_PREVIEW).map((m) => (
+									<li>
+										<strong>{m.name}</strong> <span class="alumni-period">(Advisor: {m.advisor})</span>
+									</li>
+								))}
+							</ul>
+						</details>
+					)}
 				</div>
 			))}
+		</section>
+
+		<section class="alumni-section">
+			<h2 class="alumni-heading">Alumni</h2>
+			<p class="alumni-intro">We thank all MARS Lab alumni for their invaluable contributions and wish them bright futures ahead.</p>
+
+			<details class="alumni-collapse">
+				<div class="alumni-collapse-body">
+					{alumni.map((cohort) => (
+						<div class="alumni-group">
+							<h3 class="alumni-group-title">{cohort.group}</h3>
+							<ul class="alumni-list">
+								{cohort.members.map((m) => (
+									<li>
+										<strong>{m.name}</strong>{m.note ? ` (${m.note})` : ""}{m.topic ? ` — ${m.topic}` : ""} <span class="alumni-period">({m.period})</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</div>
+				<summary class="alumni-toggle" aria-label="Show or hide alumni">
+					<svg class="alumni-tri" viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3 5.5l5 5 5-5z" fill="currentColor"/></svg>
+				</summary>
+			</details>
 		</section>
 
 		<!-- Bio modal: opened by clicking a person's photo or name -->
@@ -558,6 +601,108 @@ if (others.length) sections.push({ title: "Team", members: others });
 	.alumni-period {
 		color: var(--remark-color);
 		white-space: nowrap;
+	}
+
+	/* Current-student groups: preview a few, expand the rest */
+	.student-group {
+		margin-bottom: 1.75rem;
+	}
+
+	.student-list {
+		margin: 0;
+	}
+
+	.student-list-rest {
+		margin-top: 0.45rem;
+	}
+
+	.student-more > summary {
+		list-style: none;
+	}
+
+	.student-more > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.student-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		margin-top: 0.7rem;
+		cursor: pointer;
+		user-select: none;
+		font-size: 0.92rem;
+		font-weight: 600;
+		color: var(--accent);
+		transition: color 0.18s ease;
+	}
+
+	.student-toggle:hover {
+		color: var(--accent-deep);
+	}
+
+	.student-chevron {
+		transition: transform 0.2s ease;
+	}
+
+	.student-more[open] .student-chevron {
+		transform: rotate(180deg);
+	}
+
+	/* Toggle the Show all / Show less labels based on open state */
+	.student-toggle-less {
+		display: none;
+	}
+
+	.student-more[open] .student-toggle-more {
+		display: none;
+	}
+
+	.student-more[open] .student-toggle-less {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	/* Alumni collapsible list — centered triangle toggle right below the names.
+	   <details> always paints <summary> first; flex `order` moves it below the body. */
+	.alumni-collapse {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.alumni-collapse-body {
+		order: 1;
+	}
+
+	.alumni-collapse-body .alumni-group:last-child {
+		margin-bottom: 0;
+	}
+
+	.alumni-collapse > summary {
+		order: 2;
+		display: flex;
+		justify-content: center;
+		padding: 0.5rem 0 0.2rem;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	.alumni-collapse > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.alumni-tri {
+		color: var(--accent);
+		transition: transform 0.2s ease, color 0.18s ease;
+	}
+
+	.alumni-collapse > summary:hover .alumni-tri {
+		color: var(--accent-deep);
+	}
+
+	.alumni-collapse[open] .alumni-tri {
+		transform: rotate(180deg);
 	}
 
 	/* Responsive */

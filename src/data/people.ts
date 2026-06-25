@@ -4,8 +4,10 @@ export const people = [
 		name: "Jianfei Yang",
 		position: "Principal Investigator",
 		image: "/people/jianfei-yang.jpg",
-		bio: "Jianfei Yang is an Assistant Professor (Tenure-Track) at Nanyang Technological University, where he directs the Multimodal embodied AI and Robotic Systems (MARS) Lab across the School of Mechanical and Aerospace Engineering and the School of Electrical and Electronic Engineering. He received his B.Eng. from Sun Yat-sen University (2016) and his Ph.D. from NTU (2020), and previously held positions at UC Berkeley (BEARS) and NTU as a Presidential Postdoctoral Fellow, with visiting roles at the University of Tokyo and Harvard. He has been recognized as a Top 2% Scientist and named to the Forbes Asia 30 Under 30 (2024).",
-		research: "Jianfei Yang is an Assistant Professor in NTU, founding the MARS Lab in Sep 2024. He was previously a researcher at Harvard University, UC Berkeley, and the University of Tokyo. His long-term vision is to develop intelligent robots that can understand, assist, and meaningfully interact with people in the physical world.",
+		bio: "Jianfei Yang is an Assistant Professor with the School of Mechanical and Aerospace Engineering, jointly appointed with the School of Electrical and Electronic Engineering at Nanyang Technological University (NTU), Singapore, where he leads the Multimodal embodied AI and Robotic Systems (MARS) Lab. He received the B.Eng. degree from Sun Yat-sen University in 2016 and the Ph.D. degree from NTU in 2020 with the Best Thesis Award. After completing his Ph.D., he served as a Senior Research Engineer at the BEARS, University of California, Berkeley, and subsequently as a Presidential Postdoctoral Fellow at NTU from 2021 to 2023. In 2024, he was a Visiting Scientist at the University of Tokyo and a Visiting Professor at Harvard University.",
+		research: "His research focuses on physical AI, exploring how artificial intelligence can empower physical systems, such as robots, IoT devices, and industrial platforms, to sense, understand, and interact with the real world. He has been recognized as a Forbes 30 Under 30 honoree (Asia, 2024) and has been listed among Stanford's World's Top 2% Scientists since 2023. He has also won more than ten international AI challenges spanning computer vision, embodied AI, and interdisciplinary research areas.",
+		// Shown inline on the People page (outside the modal); the full bio/research above appears in the modal card.
+		preview: "Jianfei Yang is an Assistant Professor in NTU, founding the MARS Lab in Sep 2024. He was previously a researcher at Harvard University, UC Berkeley, and the University of Tokyo. His long-term vision is to develop intelligent robots that can understand, assist, and meaningfully interact with people in the physical world.",
 		links: {
 			website: "https://marsyang.site/",
 			email: "jianfei.yang@ntu.edu.sg",
@@ -275,6 +277,41 @@ export const people = [
 			scholar: "https://scholar.google.com/citations?user=SZg1xeoAAAAJ&hl=zh-CN"
 		}
 	},
+];
+
+// Current students listed by name only (no photo/bio), grouped by degree level.
+export const students = [
+	{
+		group: "MSc Students",
+		members: [
+			{ name: "Shiyu Liu", advisor: "Dr. Boyu Ma" },
+			{ name: "Daoyuan Zhu", advisor: "Dr. Boyu Ma" },
+			{ name: "Bin Zhou", advisor: "Dr. Boyu Ma" },
+			{ name: "Chenxi Wen", advisor: "Dr. Boyu Ma" },
+			{ name: "Yining Zhou", advisor: "Dr. Boyu Ma" },
+			{ name: "Houwang Chen", advisor: "Dr. Boyu Ma" },
+			{ name: "Yizhou Liu", advisor: "Dr. Boyu Ma" },
+			{ name: "Beichen Wang", advisor: "Dr. Boyu Ma" },
+			{ name: "Bailiang Chen", advisor: "Dr. Boyu Ma" },
+			{ name: "Fengrui Huang", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Zikun Cai", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Yutong Song", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Weiren Cai", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Haodong Wu", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Maokuan Xu", advisor: "Dr. Xinyu Zhou" }
+		]
+	},
+	{
+		group: "Undergrad Students",
+		members: [
+			{ name: "Wuqi Zhou", advisor: "Dr. Boyu Ma" },
+			{ name: "Mengfei Zhao", advisor: "Dr. Jindou Jia" },
+			{ name: "Yuchen Xie", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Yajie Wang", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Rongyu Xie", advisor: "Dr. Xinyu Zhou" },
+			{ name: "Lichen Yin", advisor: "Dr. Xinyu Zhou" }
+		]
+	}
 ];
 
 // Alumni — plain-text list. `note` = current affiliation / destination, `topic` = thesis/project topic.

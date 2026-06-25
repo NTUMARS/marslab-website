@@ -554,4 +554,14 @@ const partners = [
 	}
 	setupEventsScroller();
 	document.addEventListener('astro:page-load', setupEventsScroller);
+
+	// Re-run after Swup page transitions (astro:page-load does NOT fire under Swup,
+	// so without this the arrows lose their handlers when navigating back to home).
+	if (window.swup) {
+		window.swup.hooks.on('page:view', () => requestAnimationFrame(setupEventsScroller));
+	} else {
+		document.addEventListener('swup:enable', () => {
+			window.swup?.hooks.on('page:view', () => requestAnimationFrame(setupEventsScroller));
+		});
+	}
 </script>
