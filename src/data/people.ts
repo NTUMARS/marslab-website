@@ -79,6 +79,17 @@ export const people = [
 			email: "xinyu.zhou@ntu.edu.sg"
 		}
 	},
+	{
+		name: "Shuwei Shao",
+		position: "Postdoc",
+		image: "/people/shuwei-shao.jpg",
+		bio: "Shuwei Shao is a Postdoctoral Research Fellow in the MARS Lab at Nanyang Technological University, working with Prof. Jianfei Yang. He received his Ph.D. in 2025 from the School of Automation Science and Electrical Engineering, Beihang University.",
+		research: "His research focuses on depth estimation, depth completion, 3D vision, and robot learning. His work aims to develop robust visual perception and learning algorithms that enable intelligent robotic systems to better understand and interact with real-world environments.",
+		links: {
+			scholar: "https://scholar.google.com.hk/citations?hl=zh-CN&user=ecZHSVQAAAAJ",
+			github: "https://github.com/ShuweiShao"
+		}
+	},
 	// PhD Students
 	{
 		name: "Chuhao Zhou",
