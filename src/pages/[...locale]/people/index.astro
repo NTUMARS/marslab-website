@@ -13,9 +13,6 @@ const { locale = i18n!.defaultLocale } = Astro.params;
 const t = i18nit(locale);
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 
-// How many students to show before the "Show all" toggle
-const STUDENT_PREVIEW = 3;
-
 // Anchor id used by the home-page photo links (/people#<id>)
 const personId = (name: string) => name.toLowerCase().replace(/[^a-z]/g, '');
 const initials = (name: string) => name.split(' ').map(n => n[0]).join('');
@@ -132,33 +129,22 @@ if (others.length) sections.push({ title: "Team", members: others });
 		<section class="alumni-section">
 			<h2 class="alumni-heading">Students</h2>
 
-			{students.map((group) => (
-				<div class="student-group">
-					<h3 class="alumni-group-title">{group.group}</h3>
-					<ul class="alumni-list student-list">
-						{group.members.slice(0, STUDENT_PREVIEW).map((m) => (
-							<li>
-								<strong>{m.name}</strong> <span class="alumni-period">(Advisor: {m.advisor})</span>
-							</li>
-						))}
-					</ul>
-					{group.members.length > STUDENT_PREVIEW && (
-						<details class="student-more">
-							<summary class="student-toggle">
-								<span class="student-toggle-more">Show all <svg class="student-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-								<span class="student-toggle-less">Show less <svg class="student-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-							</summary>
-							<ul class="alumni-list student-list student-list-rest">
-								{group.members.slice(STUDENT_PREVIEW).map((m) => (
-									<li>
-										<strong>{m.name}</strong> <span class="alumni-period">(Advisor: {m.advisor})</span>
-									</li>
-								))}
-							</ul>
-						</details>
-					)}
-				</div>
-			))}
+			<div class="student-acc-wrap">
+				{students.map((group) => (
+					<details class="student-acc">
+						<summary class="student-acc-head">
+							<svg class="student-acc-tri" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 3l6 5-6 5z" fill="currentColor"/></svg>
+							<span class="student-acc-title">{group.group}</span>
+							<span class="student-acc-count">{group.members.length}</span>
+						</summary>
+						<ul class="alumni-list student-acc-list">
+							{group.members.map((m) => (
+								<li><strong>{m.name}</strong></li>
+							))}
+						</ul>
+					</details>
+				))}
+			</div>
 		</section>
 
 		<section class="alumni-section">
@@ -603,65 +589,96 @@ if (others.length) sections.push({ title: "Team", members: others });
 		white-space: nowrap;
 	}
 
-	/* Current-student groups: preview a few, expand the rest */
-	.student-group {
-		margin-bottom: 1.75rem;
+	/* Current students — each degree level is its own collapsible toggle:
+	   a brand-accent ▶ triangle + the group name; click reveals the name list.
+	   Editorial hairline dividers keep it elegant and on-brand. */
+	.student-acc-wrap {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid var(--shadow-color);
+		margin-top: 0.25rem;
 	}
 
-	.student-list {
-		margin: 0;
+	.student-acc {
+		border-bottom: 1px solid var(--shadow-color);
 	}
 
-	.student-list-rest {
-		margin-top: 0.45rem;
-	}
-
-	.student-more > summary {
+	.student-acc-head {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.9rem 0.35rem;
+		cursor: pointer;
 		list-style: none;
+		user-select: none;
+		transition: background-color 0.18s ease;
 	}
 
-	.student-more > summary::-webkit-details-marker {
+	.student-acc-head::-webkit-details-marker {
 		display: none;
 	}
 
-	.student-toggle {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
-		margin-top: 0.7rem;
-		cursor: pointer;
-		user-select: none;
-		font-size: 0.92rem;
-		font-weight: 600;
-		color: var(--accent);
-		transition: color 0.18s ease;
+	.student-acc-head:hover {
+		background-color: var(--accent-soft);
 	}
 
-	.student-toggle:hover {
+	.student-acc-tri {
+		color: var(--accent);
+		flex-shrink: 0;
+		transition: transform 0.22s cubic-bezier(0.22, 0.68, 0.28, 1), color 0.18s ease;
+	}
+
+	.student-acc[open] .student-acc-tri {
+		transform: rotate(90deg);
+	}
+
+	.student-acc-head:hover .student-acc-tri {
 		color: var(--accent-deep);
 	}
 
-	.student-chevron {
-		transition: transform 0.2s ease;
+	.student-acc-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		transition: color 0.18s ease;
 	}
 
-	.student-more[open] .student-chevron {
-		transform: rotate(180deg);
+	.student-acc-head:hover .student-acc-title {
+		color: var(--accent-deep);
 	}
 
-	/* Toggle the Show all / Show less labels based on open state */
-	.student-toggle-less {
+	/* subtle muted count of members in the group, pinned to the right */
+	.student-acc-count {
+		margin-left: auto;
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: var(--remark-color);
+		background-color: var(--block-color);
+		border-radius: 999px;
+		padding: 0.05rem 0.55rem;
+		line-height: 1.5;
+	}
+
+	.student-acc-list {
+		padding-left: 2.1rem;
+		padding-bottom: 1rem;
+		margin: 0;
+	}
+
+	/* When collapsed, hide the name list. Needed because the base .alumni-list
+	   sets `display: flex`, which would otherwise override the browser's default
+	   "hide closed <details> content" rule and leave the names always visible. */
+	.student-acc:not([open]) .student-acc-list {
 		display: none;
 	}
 
-	.student-more[open] .student-toggle-more {
-		display: none;
+	.student-acc[open] .student-acc-list {
+		animation: student-reveal 0.26s ease;
 	}
 
-	.student-more[open] .student-toggle-less {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
+	@keyframes student-reveal {
+		from { opacity: 0; transform: translateY(-5px); }
+		to   { opacity: 1; transform: translateY(0); }
 	}
 
 	/* Alumni collapsible list — centered triangle toggle right below the names.
