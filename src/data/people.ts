@@ -203,7 +203,11 @@ export const people = [
 		image: "/people/yunjiao-zhou.jpg",
 		bio: "Yunjiao Zhou is a Ph.D. student (co-supervised) at the MARS Lab, Nanyang Technological University.",
 		research: "Her research focuses on multimodal learning.",
-		links: {}
+		links: {
+			email: "yunjiao001@e.ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=g46qu98AAAAJ&hl=zh-CN",
+			github: "https://github.com/pridy999"
+		}
 	},
 	// MEng Students
 	{
