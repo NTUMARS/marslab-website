@@ -20,7 +20,7 @@ import Base from "$layouts/Base.astro";
 			var key = path.replace(/\.html?$/i, "").toLowerCase();      // 2. old top-level page
 			var map = {
 				"/team": "/people/", "/members": "/people/",
-				"/home": "/", "/about": "/", "/news": "/", "/research": "/",
+				"/home": "/", "/about": "/", "/news": "/", "/research": "/research",
 				"/join": "/contact/"
 			};
 			if (map[key]) location.replace(map[key]);

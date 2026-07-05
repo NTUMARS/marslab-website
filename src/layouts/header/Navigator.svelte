@@ -28,6 +28,17 @@
 	}
 }
 
+/* Five items now share the desktop row — tighten the boxes on narrow
+   desktops so the nav never wraps or collides with the logo. */
+@media screen and (min-width: 640px) and (max-width: 880px) {
+		header {
+			a p {
+				padding: 5px 9px;
+				font-size: 1.02rem;
+			}
+		}
+	}
+
 @media screen and (max-width: 640px) {
 		nav {
 			header {
@@ -60,12 +71,15 @@
 <div role="button" onclick={() => (menu = false)} class:pointer-events-none={!menu} class:bg-transparent={!menu} class="fixed top-0 left-0 w-screen h-screen pointer-events-auto bg-#aaaaaa88 transition-background-color sm:hidden"></div>
 
 <nav bind:this={navigator} class:transform-translate-x-full={!menu} class="fixed top-0 right-0 flex flex-col justify-between items-start gap-5 p-5 bg-background h-full sm:contents overflow-hidden transition-transform">
-    <header class="grid gap-5 c-secondary grid-rows-[repeat(5,1fr)] sm:(grid-rows-none grid-cols-[repeat(4,1fr)])">
+    <header class="grid gap-5 c-secondary grid-rows-[repeat(6,1fr)] sm:(grid-rows-none grid-cols-[repeat(5,1fr)])">
 		<button onclick={() => (menu = false)} class="sm:hidden">{@render close()}</button>
 
 		<a href={getUrl("/")} class:location={norm(route) === norm(getUrl("/")) || norm(route).startsWith(norm(getUrl("/preface")))}>
 			<p>{t("navigation.home")}</p>
 		</a>
+        <a href={getUrl("/research")} class:location={norm(route).startsWith(norm(getUrl("/research")))}>
+            <p>{t("navigation.research") || "Research"}</p>
+        </a>
         <a href={getUrl("/publications")} class:location={norm(route).startsWith(norm(getUrl("/publications")))}>
             <p>{t("navigation.publications") || "Publications"}</p>
         </a>

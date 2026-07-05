@@ -1,0 +1,434 @@
+---
+import { getCollection } from "astro:content";
+import { i18n } from "astro:config/client";
+import Base from "$layouts/Base.astro";
+import Icon from "$components/Icon.astro";
+import i18nit from "$i18n";
+import { sections, overviewLede, overviewClose } from "$data/research";
+
+export async function getStaticPaths() {
+	return i18n!.locales.map(locale => ({ params: { locale: locale == i18n?.defaultLocale ? undefined : (locale as string) } }));
+}
+
+const { locale = i18n!.defaultLocale } = Astro.params;
+const t = i18nit(locale);
+const baseUrl = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + "/";
+const asset = (path: string) => baseUrl + path.replace(/^\//, "");
+
+const publications = await getCollection("publications", publication => !publication.data.draft);
+// Collection ids carry the locale folder prefix ("en/mm-fi"); resolve with an en fallback.
+const byId = new Map(publications.map(pub => [pub.id, pub]));
+const pubOf = (ref: string) => {
+	const pub = byId.get(`${locale}/${ref}`) ?? byId.get(`en/${ref}`);
+	if (!pub) throw new Error(`research.ts references unknown publication "${ref}"`);
+	return pub;
+};
+
+// Same conventions as the publications page: venue text already containing a
+// year is shown as-is; the card's main link prefers the project website.
+const venueLabel = (venue: string, year: number) => (/\d{4}/.test(venue) ? venue : `${venue} ${year}`);
+const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.paper || pub.data.code || undefined;
+---
+
+<Base
+	title="Research"
+	{locale}
+	description="Research directions of the MARS Lab at NTU: reliable robot learning, human-robot interaction, robot perception, and physical AI agents."
+>
+	<main class="flex flex-col grow">
+		<h1 class="text-3xl font-bold mb-6">Research</h1>
+
+		<!-- Overview: lede + direction index (the index doubles as a table of contents) -->
+		<section class="overview">
+			<p class="lede">{overviewLede}</p>
+			<ol class="dir-index">
+				{
+					sections.map(section => (
+						<li>
+							<a href={`#${section.id}`}>
+								<span class="idx-num">{section.num}</span>
+								<span class="idx-name">{section.title}</span>
+								<span class="idx-desc">{section.tagline}</span>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+			<p class="lede">{overviewClose}</p>
+		</section>
+
+		{
+			sections.map(section => (
+				<section class="direction" id={section.id}>
+					<header class="dir-head">
+						<span class="dir-num">{section.num}</span>
+						<div>
+							<h2 class="dir-title">{section.title}</h2>
+							<p class="dir-tagline">{section.tagline}</p>
+						</div>
+					</header>
+
+					{section.groups.map(group => (
+						<div class="dir-group">
+							{group.label && <h3 class="track-label">{group.label}</h3>}
+							<div class="work-grid">
+								{group.items.map(item => {
+									const pub = pubOf(item.ref);
+									const link = cardLink(pub);
+									const heading = item.display ?? pub.data.title;
+									return (
+										<article class="work-card">
+											<a
+												class="work-media"
+												data-fit={item.fit ?? "cover"}
+												href={link}
+												target="_blank"
+												rel="noopener noreferrer"
+												aria-label={pub.data.title}
+											>
+												{item.media ? (
+													<video
+														class="rm-video"
+														muted
+														loop
+														playsinline
+														preload="none"
+														poster={asset(item.media.poster)}
+														data-src={asset(item.media.video)}
+													/>
+												) : (
+													<img src={asset(pub.data.image!)} alt={pub.data.title} loading="lazy" decoding="async" />
+												)}
+												{item.badge && <span class="work-badge">{item.badge}</span>}
+											</a>
+											<div class="work-caption">
+												<span class="work-venue">
+													{venueLabel(pub.data.venue, pub.data.year)}
+													{pub.data.award && <em class="work-award"> · {pub.data.award}</em>}
+												</span>
+												<h4 class="work-title">
+													<a href={link} target="_blank" rel="noopener noreferrer" title={pub.data.title}>
+														{heading}
+													</a>
+												</h4>
+												<p class="work-blurb">{item.blurb}</p>
+												<div class="work-links">
+													{pub.data.paper && (
+														<a href={pub.data.paper} target="_blank" rel="noopener noreferrer">
+															<Icon name="lucide:file-text" size={14} />
+															<span>Paper</span>
+														</a>
+													)}
+													{pub.data.website && (
+														<a href={pub.data.website} target="_blank" rel="noopener noreferrer">
+															<Icon name="lucide:globe" size={14} />
+															<span>Website</span>
+														</a>
+													)}
+													{pub.data.code && (
+														<a href={pub.data.code} target="_blank" rel="noopener noreferrer">
+															<Icon name="lucide:code" size={14} />
+															<span>Code</span>
+														</a>
+													)}
+												</div>
+											</div>
+										</article>
+									);
+								})}
+							</div>
+						</div>
+					))}
+				</section>
+			))
+		}
+
+		<!-- Lazy-load + autoplay teaser videos when they scroll into view.
+		     MUST be is:inline and INSIDE <main>: Astro hoists module scripts into
+		     <head>, but Swup's head plugin ignores <script> tags, so a head script
+		     never executes when this page is first reached via soft navigation.
+		     Inside the swapped container, SwupScriptsPlugin re-runs it on every
+		     arrival (fresh loads execute it natively), so no hook registration or
+		     cross-visit guard state is needed. -->
+		<script is:inline>
+			(function () {
+				var videos = document.querySelectorAll(".rm-video");
+				if (!videos.length) return;
+				var observer = new IntersectionObserver(
+					function (entries) {
+						for (var i = 0; i < entries.length; i++) {
+							var video = entries[i].target;
+							if (entries[i].isIntersecting) {
+								if (!video.src && video.dataset.src) video.src = video.dataset.src;
+								if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+									video.play().catch(function () {});
+								}
+							} else {
+								video.pause();
+							}
+						}
+					},
+					{ rootMargin: "200px 0px" }
+				);
+				var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+				for (var i = 0; i < videos.length; i++) {
+					// Reduced motion: leave the poster, never attach the stream.
+					if (!reduceMotion) observer.observe(videos[i]);
+				}
+			})();
+		</script>
+	</main>
+</Base>
+
+<style>
+	/* ============================== Overview ============================== */
+	.overview {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 1.4rem;
+	}
+	.lede {
+		font-size: 1.12rem;
+		line-height: 1.85;
+		color: var(--secondary-color);
+		margin: 0;
+	}
+	.lede:last-child {
+		margin-top: 1.4rem;
+	}
+
+	.dir-index {
+		list-style: none;
+		margin: 1.4rem 0 0;
+		padding: 0;
+	}
+	.dir-index li {
+		border-top: 1px solid var(--shadow-color);
+	}
+	.dir-index li:last-child {
+		border-bottom: 1px solid var(--shadow-color);
+	}
+	.dir-index a {
+		display: grid;
+		grid-template-columns: 3.2rem 15rem 1fr;
+		align-items: baseline;
+		gap: 0.6rem;
+		padding: 0.95rem 0.15rem;
+		text-decoration: none;
+		color: inherit;
+	}
+	.idx-num {
+		font-family: "KaTeX_Main", var(--serif);
+		font-size: 1.05rem;
+		color: var(--accent);
+	}
+	.idx-name {
+		font-weight: 600;
+		color: var(--primary-color);
+		transition: color 0.2s ease;
+	}
+	.idx-desc {
+		font-size: 0.92rem;
+		line-height: 1.6;
+		color: var(--secondary-color);
+	}
+	.dir-index a:hover .idx-name {
+		color: var(--accent-deep);
+	}
+
+	/* ============================== Sections ============================== */
+	.direction {
+		border-top: 1px solid var(--shadow-color);
+		margin-top: 2.6rem;
+		padding-top: 2.4rem;
+		scroll-margin-top: 4.5rem;
+	}
+	.direction:last-of-type {
+		margin-bottom: 2.6rem;
+	}
+	.dir-head {
+		display: flex;
+		align-items: baseline;
+		gap: 1.1rem;
+	}
+	.dir-num {
+		font-family: "KaTeX_Main", var(--serif);
+		font-size: 2.1rem;
+		line-height: 1;
+		color: var(--accent);
+	}
+	.dir-title {
+		font-size: 1.55rem;
+		font-weight: 700;
+		line-height: 1.25;
+		color: var(--primary-color);
+		margin: 0;
+	}
+	.dir-tagline {
+		font-size: 0.98rem;
+		line-height: 1.6;
+		color: var(--secondary-color);
+		margin: 0.3rem 0 0;
+	}
+
+	/* Sub-track micro-label (Reliable Robot Learning only) */
+	.track-label {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		font-family: var(--monospace);
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 2rem 0 1.1rem;
+	}
+	.track-label::before {
+		content: "";
+		display: inline-block;
+		width: 26px;
+		height: 1px;
+		background: color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+	.dir-group:first-of-type .track-label {
+		margin-top: 1.9rem;
+	}
+	.dir-group > .work-grid:first-child {
+		margin-top: 1.9rem;
+	}
+
+	/* ============================== Work cards ============================== */
+	.work-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		column-gap: 2rem;
+		row-gap: 2.6rem;
+	}
+	.work-card {
+		display: flex;
+		flex-direction: column;
+	}
+	/* Media frame — same static premium treatment as the Home Events cards. */
+	.work-media {
+		position: relative;
+		display: block;
+		width: 100%;
+		aspect-ratio: 1.9 / 1;
+		overflow: hidden;
+		border-radius: 0;
+		border: 1px solid var(--shadow-color);
+		background: var(--block-color);
+		box-shadow:
+			0 6px 20px rgba(42, 42, 40, 0.1),
+			0 1px 2px rgba(42, 42, 40, 0.06);
+		transition: border-color 0.2s ease;
+	}
+	.work-media:hover {
+		border-color: color-mix(in srgb, var(--accent) 40%, var(--shadow-color));
+	}
+	.work-media img,
+	.work-media video {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+	.work-media[data-fit="contain"] img,
+	.work-media[data-fit="contain"] video {
+		object-fit: contain;
+	}
+	.work-badge {
+		position: absolute;
+		top: 0.55rem;
+		right: 0.55rem;
+		font-family: var(--monospace);
+		font-size: 0.6rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent);
+		background: color-mix(in srgb, var(--background-color) 92%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+		padding: 2px 8px;
+	}
+
+	.work-caption {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		padding: 0.85rem 0.15rem 0;
+	}
+	/* Venue — the Home news-venue house style: KaTeX_Main, bold, amber. */
+	.work-venue {
+		font-family: "KaTeX_Main", var(--serif);
+		font-size: 0.84rem;
+		font-weight: 700;
+		color: var(--accent);
+	}
+	.work-award {
+		font-style: normal;
+		font-weight: 400;
+	}
+	.work-title {
+		font-size: 1.06rem;
+		font-weight: 600;
+		line-height: 1.4;
+		margin: 0;
+	}
+	.work-title a {
+		color: var(--primary-color);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+	.work-title a:hover {
+		color: var(--accent);
+	}
+	.work-blurb {
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: var(--secondary-color);
+		margin: 0;
+	}
+	.work-links {
+		display: flex;
+		gap: 1.1rem;
+		margin-top: 0.35rem;
+	}
+	.work-links a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-size: 0.82rem;
+		color: var(--secondary-color);
+		text-decoration: none;
+		border-bottom: 1px solid transparent;
+		transition: color 0.2s ease, border-color 0.2s ease;
+	}
+	.work-links a:hover {
+		color: var(--accent);
+		border-bottom-color: currentColor;
+	}
+
+	/* ============================== Responsive ============================== */
+	@media screen and (max-width: 700px) {
+		.dir-index a {
+			grid-template-columns: 2.6rem 1fr;
+			row-gap: 0.15rem;
+		}
+		.idx-desc {
+			grid-column: 2;
+		}
+		.dir-num {
+			font-size: 1.7rem;
+		}
+		.dir-title {
+			font-size: 1.35rem;
+		}
+		.work-grid {
+			grid-template-columns: 1fr;
+			row-gap: 2.2rem;
+		}
+	}
+</style>
+
