@@ -45,6 +45,13 @@ const sections = sectionDefs
 const placed = new Set([pi, ...sections.flatMap(s => s.members)].filter(Boolean));
 const others = people.filter(p => !placed.has(p));
 if (others.length) sections.push({ title: "Team", members: others });
+
+// Students: newest cohort first (year defaults to "2025"); the sort is stable,
+// so the curated per-advisor order within a year is preserved.
+const studentGroups = students.map(g => ({
+	...g,
+	members: [...g.members].sort((a, b) => Number(b.year ?? "2025") - Number(a.year ?? "2025")),
+}));
 ---
 
 <Base title={t("navigation.people") || "People"} {locale}>
@@ -130,7 +137,7 @@ if (others.length) sections.push({ title: "Team", members: others });
 			<h2 class="alumni-heading">Students</h2>
 
 			<div class="student-acc-wrap">
-				{students.map((group) => (
+				{studentGroups.map((group) => (
 					<details class="student-acc">
 						<summary class="student-acc-head">
 							<svg class="student-acc-tri" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M5 3l6 5-6 5z" fill="currentColor"/></svg>
@@ -200,8 +207,9 @@ if (others.length) sections.push({ title: "Team", members: others });
 		font-weight: 700;
 		color: var(--primary-color);
 		margin: 0 0 1.5rem 0;
-		padding-bottom: 0.4rem;
-		border-bottom: 2px solid var(--accent);
+		padding-bottom: 0.45rem;
+		/* same gold as the global .accent-underline — a hairline, not a bar */
+		border-bottom: 1px solid #C2860E;
 		display: inline-block;
 	}
 
@@ -217,10 +225,12 @@ if (others.length) sections.push({ title: "Team", members: others });
 	.pi-photo {
 		width: 200px;
 		aspect-ratio: 1 / 1;
-		border-radius: 8px;
+		border-radius: 0;
 		overflow: hidden;
 		border: 1px solid var(--shadow-color);
 		background: var(--block-color);
+		box-shadow: 0 6px 20px rgba(42, 42, 40, 0.10), 0 1px 2px rgba(42, 42, 40, 0.06);
+		transition: border-color 0.2s ease;
 	}
 
 	.pi-photo img {
@@ -246,10 +256,13 @@ if (others.length) sections.push({ title: "Team", members: others });
 	}
 
 	.pi-role {
-		font-size: 1rem;
-		font-weight: 500;
-		color: var(--secondary-color);
-		margin: 0;
+		font-family: var(--monospace);
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 0.15rem 0 0;
 	}
 
 	.pi-research {
@@ -276,10 +289,12 @@ if (others.length) sections.push({ title: "Team", members: others });
 	.person-photo {
 		width: 100%;
 		aspect-ratio: 1 / 1;
-		border-radius: 8px;
+		border-radius: 0;
 		overflow: hidden;
 		background: var(--block-color);
 		border: 1px solid var(--shadow-color);
+		box-shadow: 0 6px 20px rgba(42, 42, 40, 0.10), 0 1px 2px rgba(42, 42, 40, 0.06);
+		transition: border-color 0.2s ease;
 	}
 
 	.person-photo img {
@@ -295,10 +310,12 @@ if (others.length) sections.push({ title: "Team", members: others });
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, var(--block-color) 0%, var(--shadow-color) 100%);
-		font-size: 2rem;
+		background: var(--block-color);
+		font-family: var(--monospace);
+		font-size: 1.6rem;
 		font-weight: 600;
-		color: var(--secondary-color);
+		letter-spacing: 0.08em;
+		color: var(--remark-color);
 		text-transform: uppercase;
 	}
 
@@ -306,14 +323,18 @@ if (others.length) sections.push({ title: "Team", members: others });
 		font-size: 1.05rem;
 		font-weight: 600;
 		color: var(--primary-color);
-		margin: 0.7rem 0 0.1rem 0;
+		margin: 0.75rem 0 0.05rem 0;
 		line-height: 1.3;
 	}
 
 	.person-role {
-		font-size: 0.85rem;
+		font-family: var(--monospace);
+		font-size: 0.66rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		color: var(--secondary-color);
-		margin: 0;
+		margin: 0.2rem 0 0;
 	}
 
 	/* Icon-only profile links */
@@ -330,16 +351,17 @@ if (others.length) sections.push({ title: "Team", members: others });
 		justify-content: center;
 		width: 28px;
 		height: 28px;
-		background: var(--block-color);
+		background: transparent;
 		color: var(--accent);
-		border-radius: 6px;
+		border: 1px solid var(--shadow-color);
+		border-radius: 0;
 		text-decoration: none;
-		transition: background 0.2s ease, transform 0.1s ease;
+		transition: border-color 0.2s ease, background-color 0.2s ease;
 	}
 
 	.person-link:hover {
 		background: var(--accent-soft);
-		transform: translateY(-2px);
+		border-color: color-mix(in srgb, var(--accent) 40%, var(--shadow-color));
 	}
 
 	.person-link :global(figure) {
@@ -362,9 +384,14 @@ if (others.length) sections.push({ title: "Team", members: others });
 		cursor: pointer;
 	}
 
+	.person-photo:hover,
+	.pi-photo:hover {
+		border-color: color-mix(in srgb, var(--accent) 40%, var(--shadow-color));
+	}
+
 	.person-name:hover,
 	.pi-name:hover {
-		color: var(--accent);
+		color: var(--accent-deep);
 	}
 
 	/* Bio modal */
@@ -385,25 +412,34 @@ if (others.length) sections.push({ title: "Team", members: others });
 	.bio-modal-backdrop {
 		position: absolute;
 		inset: 0;
-		background: rgba(15, 15, 15, 0.35);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		/* warm, faintly amber-cast veil */
+		background: rgba(30, 24, 12, 0.42);
+		backdrop-filter: blur(10px) saturate(0.9);
+		-webkit-backdrop-filter: blur(10px) saturate(0.9);
 		animation: bm-fade 0.2s ease;
 	}
 
+	/* Editorial print spread: photo bleeds to the card's left edge, the text
+	   column reads like a book page. Height follows the content (short bios
+	   get a compact card); long bios scroll inside the bio block. */
 	.bio-modal-card {
 		position: relative;
 		z-index: 1;
 		display: grid;
-		grid-template-columns: 260px 1fr;
-		gap: 1.75rem;
-		width: min(700px, 100%);
-		height: min(440px, 85vh);
+		grid-template-columns: 300px 1fr;
+		gap: 0;
+		width: min(760px, 100%);
+		/* height follows the text column; the cap lives on .bio-modal-info —
+		   a max-height on the grid container would NOT constrain the row, the
+		   grid would lay out at content height and just get clipped. */
+		height: auto;
+		min-height: 400px;
 		background: var(--background-color);
 		border: 1px solid var(--shadow-color);
-		border-radius: 14px;
-		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
-		padding: 1.75rem;
+		border-radius: 0;
+		box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.18);
+		padding: 0;
+		overflow: hidden;
 		animation: bm-pop 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 
@@ -417,58 +453,105 @@ if (others.length) sections.push({ title: "Team", members: others });
 		to { opacity: 1; transform: translateY(0) scale(1); }
 	}
 
-	/* Photo is vertically centered in the (taller) fixed-height column */
+	@media (prefers-reduced-motion: reduce) {
+		.bio-modal-backdrop,
+		.bio-modal-card {
+			animation: none;
+		}
+	}
+
+	/* Photo column — full-bleed against the card's left/top/bottom edges */
 	.bio-modal-photo {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		position: relative;
+		min-height: 100%;
+		background: var(--block-color);
+		border-right: 1px solid var(--shadow-color);
 	}
 
 	.bio-modal-photo img {
+		/* absolute so the column height tracks the text column, not the image */
+		position: absolute;
+		inset: 0;
 		width: 100%;
-		aspect-ratio: 1 / 1;
+		height: 100%;
 		object-fit: cover;
-		border-radius: 10px;
-		border: 1px solid var(--shadow-color);
+		border: none;
+		border-radius: 0;
 		display: block;
 	}
 
-	/* Right column: name/role pinned, bio scrolls, links pinned */
+	/* Content column — the "page": kicker, name, gold rule, bio, links.
+	   The max-height here is what makes long bios scroll internally. */
 	.bio-modal-info {
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
 		min-height: 0;
-	}
-
-	.bio-modal-name {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: var(--primary-color);
-		margin: 0;
-		line-height: 1.2;
-		flex-shrink: 0;
+		max-height: min(560px, 85vh);
+		padding: 2rem 2.25rem 1.4rem 2rem;
 	}
 
 	.bio-modal-role {
-		font-size: 0.95rem;
-		color: var(--secondary-color);
-		margin: 0.2rem 0 0.75rem 0;
+		/* kicker above the name — pure CSS reorder, DOM/a11y order unchanged */
+		order: -1;
+		font-family: var(--monospace);
+		font-size: 0.66rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 0 0 0.6rem;
 		flex-shrink: 0;
+	}
+
+	.bio-modal-name {
+		font-family: "KaTeX_Main", var(--serif);
+		font-size: 1.8rem;
+		font-weight: 700;
+		line-height: 1.15;
+		color: var(--primary-color);
+		margin: 0;
+		flex-shrink: 0;
+	}
+
+	/* short gold rule under the name — echoes the .accent-underline gold */
+	.bio-modal-name::after {
+		content: "";
+		display: block;
+		width: 44px;
+		height: 2px;
+		background: #C2860E;
+		margin-top: 0.85rem;
 	}
 
 	.bio-modal-bio {
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
-		padding-right: 0.5rem;
+		margin-top: 1.1rem;
+		padding-right: 0.75rem;
+		/* hairline scrollbar — the default bar reads as a heavy rule on the "page" */
+		scrollbar-width: thin;
+		scrollbar-color: var(--shadow-color) transparent;
+	}
+
+	.bio-modal-bio::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.bio-modal-bio::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.bio-modal-bio::-webkit-scrollbar-thumb {
+		background: var(--shadow-color);
 	}
 
 	.bio-modal-bio :global(p) {
-		font-size: 0.92rem;
-		line-height: 1.65;
+		font-size: 0.93rem;
+		line-height: 1.7;
 		color: var(--primary-color);
-		margin: 0 0 0.7rem 0;
+		margin: 0 0 0.8rem 0;
 	}
 
 	.bio-modal-bio :global(p:last-child) {
@@ -477,51 +560,74 @@ if (others.length) sections.push({ title: "Team", members: others });
 
 	.bio-modal-links {
 		flex-shrink: 0;
-		margin-top: 0.4rem;
-		padding-top: 0.85rem;
+		margin-top: 1rem;
+		padding-top: 1rem;
 		border-top: 1px solid var(--shadow-color);
 	}
 
+	/* Ghost close button */
 	.bio-modal-close {
 		position: absolute;
-		top: 0.7rem;
-		right: 0.7rem;
-		width: 32px;
-		height: 32px;
+		top: 0.65rem;
+		right: 0.65rem;
+		width: 34px;
+		height: 34px;
 		border: none;
-		background: var(--block-color);
+		background: transparent;
 		color: var(--secondary-color);
-		border-radius: 50%;
+		border-radius: 0;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 		line-height: 1;
 		z-index: 2;
-		transition: background 0.2s ease, color 0.2s ease;
+		transition: background-color 0.2s ease, color 0.2s ease;
 	}
 
 	.bio-modal-close:hover {
-		background: var(--shadow-color);
-		color: var(--primary-color);
+		background: var(--accent-soft);
+		color: var(--accent-deep);
 	}
 
 	:global(body.modal-open) {
 		overflow: hidden;
 	}
 
+	/* Future-proofing: if a member ever has no photo the JS hides the photo
+	   column — collapse the grid so the text doesn't sit in the 300px track. */
+	.bio-modal-card:has(.bio-modal-photo[style*="none"]) {
+		grid-template-columns: 1fr;
+	}
+
 	@media (max-width: 640px) {
+		.bio-modal {
+			padding: 1rem;
+		}
+
 		.bio-modal-card {
 			grid-template-columns: 1fr;
-			gap: 1rem;
-			height: auto;
-			max-height: 85vh;
+			min-height: 0;
+			max-height: 88vh;
 			overflow-y: auto;
 		}
 
-		.bio-modal-photo img {
-			width: 180px;
+		/* full-bleed banner crop up top */
+		.bio-modal-photo {
+			min-height: 0;
+			height: 230px;
+			border-right: none;
+			border-bottom: 1px solid var(--shadow-color);
+		}
+
+		.bio-modal-info {
+			max-height: none; /* the whole card scrolls on mobile */
+			padding: 1.3rem 1.25rem 1.1rem;
+		}
+
+		.bio-modal-name {
+			font-size: 1.45rem;
 		}
 
 		/* On mobile the whole card scrolls, so the bio doesn't need its own scroll */
@@ -530,9 +636,9 @@ if (others.length) sections.push({ title: "Team", members: others });
 			padding-right: 0;
 		}
 
-		.bio-modal-links {
-			border-top: none;
-			padding-top: 0.4rem;
+		/* ✕ sits over the photo — give it a translucent plate */
+		.bio-modal-close {
+			background: color-mix(in srgb, var(--background-color) 82%, transparent);
 		}
 	}
 
@@ -546,8 +652,8 @@ if (others.length) sections.push({ title: "Team", members: others });
 		font-weight: 700;
 		color: var(--primary-color);
 		margin: 0 0 0.75rem 0;
-		padding-bottom: 0.4rem;
-		border-bottom: 2px solid var(--accent);
+		padding-bottom: 0.45rem;
+		border-bottom: 1px solid #C2860E;
 		display: inline-block;
 	}
 
@@ -650,12 +756,14 @@ if (others.length) sections.push({ title: "Team", members: others });
 	/* subtle muted count of members in the group, pinned to the right */
 	.student-acc-count {
 		margin-left: auto;
-		font-size: 0.78rem;
+		font-family: var(--monospace);
+		font-size: 0.68rem;
 		font-weight: 600;
 		color: var(--remark-color);
-		background-color: var(--block-color);
-		border-radius: 999px;
-		padding: 0.05rem 0.55rem;
+		background-color: transparent;
+		border: 1px solid var(--shadow-color);
+		border-radius: 0;
+		padding: 0.1rem 0.5rem;
 		line-height: 1.5;
 	}
 
