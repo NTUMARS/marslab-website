@@ -512,6 +512,12 @@ const partners = [
 	// animation and the position never advanced → the arrows appeared to "do
 	// nothing"). Native scrollBy animates once and behaves consistently across
 	// engines; a real button click is a user gesture, so smooth scrolling is honoured.
+	// Guard MUST be an in-memory WeakSet, never a data-* attribute: Swup caches the
+	// initial page by snapshotting the live DOM as an HTML string, so a data-* flag
+	// written here gets baked into the cache. On returning Home the restored DOM is
+	// brand-new (no listeners) but already carries the flag, the guard early-returns,
+	// and the arrows are dead forever (same bug the constellation hit; see 7c6caa2).
+	const evBound = new WeakSet<Element>();
 	function setupEventsScroller() {
 		const scroller = document.querySelector('.events-scroller') as HTMLElement | null;
 		if (!scroller) return;
@@ -533,8 +539,8 @@ const partners = [
 
 		// Bind handlers once per element; update() still runs on every (re-)init so the
 		// disabled state is correct after Swup swaps in a fresh DOM.
-		if (scroller.dataset.evReady !== '1') {
-			scroller.dataset.evReady = '1';
+		if (!evBound.has(scroller)) {
+			evBound.add(scroller);
 			prev?.addEventListener('click', () => nudge(-1));
 			next?.addEventListener('click', () => nudge(1));
 			scroller.addEventListener('scroll', update, { passive: true });
