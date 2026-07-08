@@ -207,7 +207,9 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 	   across the name while the numeral and name deepen. Pure typography. */
 	.dir-index a {
 		display: grid;
-		grid-template-columns: 2.9rem max-content 1fr;
+		/* Fixed name column (widest is "Human-Robot Interaction" ≈ 207px) so the
+		   description column starts at the same x on every row. */
+		grid-template-columns: 2.9rem 13.5rem 1fr;
 		align-items: baseline;
 		column-gap: 1.2rem;
 		padding: 0.85rem 0.15rem;
@@ -222,6 +224,7 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 		transition: color 0.25s ease;
 	}
 	.idx-name {
+		justify-self: start; /* don't stretch to the track — underline must end at the text */
 		font-weight: 600;
 		color: var(--primary-color);
 		white-space: nowrap;
