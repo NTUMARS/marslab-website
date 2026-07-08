@@ -117,7 +117,7 @@ export const sections: ResearchSection[] = [
 		id: "robot-perception",
 		num: "03",
 		title: "Robot Perception",
-		tagline: "Multimodal sensing and perception beyond vision, including wireless and cross-modal understanding.",
+		tagline: "Exploring new sensors and multimodal perception model beyond vision.",
 		groups: [
 			{
 				items: [
