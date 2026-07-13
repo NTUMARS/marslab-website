@@ -63,8 +63,10 @@ const recencyKey = (pub: any): number => {
 	return 0;
 };
 
-// Sort newest first: year desc → recency (month) desc → title
+// Featured papers pin to the top; within each group sort newest first:
+// year desc → recency (month) desc → title
 const sortedPublications = publications.sort((a, b) => {
+	if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
 	if (b.data.year !== a.data.year) return b.data.year - a.data.year;
 	const diff = recencyKey(b) - recencyKey(a);
 	if (diff !== 0) return diff;
@@ -97,7 +99,7 @@ const areas = [...knownAreas, ...extraAreas];
 							<div class="placeholder-image"><span class="year-badge">{pub.data.year}</span></div>
 						);
 						return (
-						<article class="publication-card" data-year={pub.data.year} data-tags={orderedTags(pub.data.tags).join("|")} data-status={pubStatus(pub.data.venue)}>
+						<article class:list={["publication-card", { featured: pub.data.featured }]} data-year={pub.data.year} data-tags={orderedTags(pub.data.tags).join("|")} data-status={pubStatus(pub.data.venue)}>
 							<div class="pub-aside">
 								{link ? (
 									<a class="pub-thumb" href={link} target="_blank" rel="noopener noreferrer">{thumb}</a>
@@ -112,6 +114,7 @@ const areas = [...knownAreas, ...extraAreas];
 							</div>
 
 							<div class="pub-body">
+								{pub.data.featured && <span class="featured-label">Featured</span>}
 								<h2 class="publication-title">
 									{link ? (
 										<a href={link} target="_blank" rel="noopener noreferrer">{pub.data.title}</a>
@@ -332,13 +335,24 @@ const areas = [...knownAreas, ...extraAreas];
 		width: 250px;
 	}
 
+	/* Sharp-cornered plate with the same soft shadow as the Research work
+	   cards — quiet at rest, amber hairline on hover. No zoom gimmicks. */
 	.pub-thumb {
 		display: block;
 		width: 100%;
-		border-radius: 8px;
+		border-radius: 0;
 		overflow: hidden;
 		border: 1px solid var(--shadow-color);
 		line-height: 0;
+		background: var(--block-color);
+		box-shadow:
+			0 6px 20px rgba(42, 42, 40, 0.1),
+			0 1px 2px rgba(42, 42, 40, 0.06);
+		transition: border-color 0.2s ease;
+	}
+
+	a.pub-thumb:hover {
+		border-color: color-mix(in srgb, var(--accent) 40%, var(--shadow-color));
 	}
 
 	/* Height follows the image's own aspect ratio, so no grey letterboxing shows */
@@ -346,11 +360,6 @@ const areas = [...knownAreas, ...extraAreas];
 		width: 100%;
 		height: auto;
 		display: block;
-		transition: transform 0.3s ease;
-	}
-
-	a.pub-thumb:hover img {
-		transform: scale(1.04);
 	}
 
 	/* Placeholder (papers without an image) keeps a fixed 16:9 frame */
@@ -387,19 +396,38 @@ const areas = [...knownAreas, ...extraAreas];
 		gap: 0.5rem;
 	}
 
+	/* Venue in the house style — KaTeX serif, bold, amber; no chip. */
 	.pub-venue {
 		display: inline-block;
 		max-width: 100%;
-		font-family: var(--monospace);
-		font-size: 0.72rem;
-		letter-spacing: 0.02em;
+		font-family: "KaTeX_Main", var(--serif);
+		font-size: 0.86rem;
+		font-weight: 700;
 		line-height: 1.5;
 		color: var(--accent);
-		background-color: var(--accent-soft);
-		border: 1px solid rgba(180, 83, 9, 0.22);
-		border-radius: 4px;
-		padding: 2px 9px;
 		overflow-wrap: break-word;
+	}
+
+	/* Featured mark — the site's mono micro-label with a short hairline,
+	   same voice as the Research page track labels. */
+	.featured-label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--monospace);
+		font-size: 0.64rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin-bottom: -0.1rem;
+	}
+	.featured-label::before {
+		content: "";
+		display: inline-block;
+		width: 22px;
+		height: 1px;
+		background: color-mix(in srgb, var(--accent) 45%, transparent);
 	}
 
 	.publication-title {
@@ -410,14 +438,22 @@ const areas = [...knownAreas, ...extraAreas];
 		margin: 0;
 	}
 
+	/* Title hover — the same fine underline that draws across the Research
+	   index names; deepens rather than lights up. */
 	.publication-title a {
 		color: inherit;
 		text-decoration: none;
-		transition: color 0.2s ease;
+		padding-bottom: 1px;
+		background-image: linear-gradient(currentColor, currentColor);
+		background-repeat: no-repeat;
+		background-size: 0% 1.5px;
+		background-position: 0 100%;
+		transition: color 0.25s ease, background-size 0.38s cubic-bezier(0.22, 0.68, 0.28, 1);
 	}
 
 	.publication-title a:hover {
-		color: var(--accent);
+		color: var(--accent-deep);
+		background-size: 100% 1.5px;
 	}
 
 	.publication-topics {
@@ -427,28 +463,33 @@ const areas = [...knownAreas, ...extraAreas];
 		margin: 0;
 	}
 
+	/* Topic tags as quiet mono micro-labels — hairline boxes, no pill fills. */
 	.topic-tag {
 		display: inline-block;
 		max-width: 100%;
-		padding: 0.15rem 0.6rem;
-		background: var(--block-color);
+		padding: 2px 8px;
 		color: var(--secondary-color);
 		border: 1px solid var(--shadow-color);
-		border-radius: 12px;
-		font-size: 0.75rem;
-		line-height: 1.5;
+		border-radius: 2px;
+		font-family: var(--monospace);
+		font-size: 0.64rem;
+		font-weight: 500;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+		line-height: 1.7;
 		overflow-wrap: break-word;
 	}
 
+	/* Award reads as part of the venue line — a "· Best Paper" continuation. */
 	.award-badge {
 		display: inline-block;
-		padding: 0.15rem 0.5rem;
-		margin-left: 0.5rem;
-		background-color: var(--accent-soft);
+		font-family: "KaTeX_Main", var(--serif);
+		font-size: 0.86rem;
+		font-weight: 400;
 		color: var(--accent);
-		font-weight: 600;
-		font-size: 0.85rem;
-		border-radius: 4px;
+	}
+	.award-badge::before {
+		content: "· ";
 	}
 
 	.publication-authors {
@@ -461,29 +502,27 @@ const areas = [...knownAreas, ...extraAreas];
 	/* Action links sit under the text in the right column */
 	.publication-links {
 		display: flex;
-		gap: 0.75rem;
+		gap: 1.1rem;
 		flex-wrap: wrap;
 		margin-top: 0.25rem;
 	}
 
+	/* Quiet inline links (same treatment as the Research work cards) —
+	   no filled buttons, no lift; amber underline on hover. */
 	.pub-link {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4rem;
-		padding: 0.35rem 0.85rem;
-		background: var(--block-color);
-		color: var(--accent);
+		gap: 0.35rem;
+		color: var(--secondary-color);
 		text-decoration: none;
-		border-radius: 4px;
-		font-size: 0.85rem;
-		font-weight: 500;
-		transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+		font-size: 0.84rem;
+		border-bottom: 1px solid transparent;
+		transition: color 0.2s ease, border-color 0.2s ease;
 	}
 
 	.pub-link:hover {
-		background: var(--accent-soft);
-		box-shadow: 0 2px 8px rgba(180, 83, 9, 0.15);
-		transform: translateY(-1px);
+		color: var(--accent);
+		border-bottom-color: currentColor;
 	}
 
 	.pub-link figure {

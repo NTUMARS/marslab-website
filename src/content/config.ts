@@ -47,6 +47,9 @@ const publications = defineCollection({
         link: z.string().url().optional(),
         doi: z.string().optional(),
         tags: z.array(z.string()).optional(),
+        // Pin to the top of the publications list with a "Featured" mark —
+        // used to promote recently accepted papers.
+        featured: z.boolean().default(false),
         draft: z.boolean().default(false)
     })
 });

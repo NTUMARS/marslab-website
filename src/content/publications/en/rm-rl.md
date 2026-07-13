@@ -11,6 +11,7 @@ image: "/publications/xiangyu-rmrl-icra26.png"
 paper: "https://arxiv.org/pdf/2510.15189"
 website: "https://ntumars.github.io/project/RMRL/"
 code: "https://github.com/NTUMARS/RMRL"
+featured: true
 tags:
   - "Robot Manipulation"
 ---

@@ -15,6 +15,7 @@ image: "/publications/jindou-a2a-arxiv26.png"
 paper: "https://arxiv.org/abs/2602.07322"
 website: "https://lorenzo-0-0.github.io/A2A_Flow_Matching/"
 code: "https://github.com/JIAjindou/A2A_Flow_Matching"
+featured: true
 tags:
   - "Robot Manipulation"
   - "Efficient AI"

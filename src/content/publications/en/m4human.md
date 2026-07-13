@@ -16,6 +16,7 @@ image: "/publications/junqiao-m4human-cvpr26.png"
 paper: "https://arxiv.org/pdf/2512.12378"
 website: "https://fanjunqiao.github.io/M4Human-site/"
 code: "https://github.com/FanJunqiao/M4Human"
+featured: true
 tags:
   - "Benchmarks & Datasets"
   - "RF Sensing"
