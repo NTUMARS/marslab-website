@@ -12,7 +12,6 @@ year: 2026
 image: "/publications/tao-abstaineqa-cvpr26.png"
 paper: "https://arxiv.org/pdf/2512.04597"
 website: "https://abstaineqa.github.io/"
-featured: true
 tags:
   - "Benchmarks & Datasets"
   - "Vision-Language Models"
