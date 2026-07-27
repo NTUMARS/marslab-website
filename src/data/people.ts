@@ -107,10 +107,10 @@ export const people = [
 		name: "Jinghan Yang",
 		position: "PhD Student",
 		image: "/people/jinghan-yang.jpg",
-		bio: "Jinghan is a Ph.D. student at NTU MARS Lab, advised by Prof. Jianfei Yang. She obtained her MPhil from the Institute of Data Science at the University of Hong Kong (HKU), advised by Prof. Yanchao Yang and Prof. Ping Luo, and her BSc in Decision Analytics, also from HKU.",
-		research: "She works on large foundation models in the physical world, developing interpretability methods that explain model decisions, guide data curation, and improve training.",
+		bio: "Jinghan is a Ph.D. student at the NTU MARS Lab, advised by Prof. Jianfei Yang. She obtained MPhil and BSc degrees from the University of Hong Kong.",
+		research: "Her research focuses on Embodied AI with large foundation models in the physical world, where she develops interpretability methods that explain model decisions, guide data curation, and improve training.",
 		links: {
-			website: "https://jinghanyang.github.io/",
+			website: "https://jinghanyang.com/",
 			email: "yangeciel@gmail.com",
 			scholar: "https://scholar.google.com/citations?user=_yo65ZgAAAAJ&hl=en",
 			twitter: "https://x.com/eciel_yang",
