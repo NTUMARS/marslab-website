@@ -94,6 +94,43 @@ export const people = [
 	},
 	// PhD Students
 	{
+		name: "Jiayi Li",
+		position: "PhD Student",
+		image: "/people/jiayi-li.jpg",
+		bio: "Jiayi Li is currently a Ph.D. student in the MARS Lab at Nanyang Technological University, under the supervision of Prof. Jianfei Yang. She obtained her Bachelor's degree from the Department of Automation, Tsinghua University, in 2026.",
+		research: "Her research focuses on active perception and robot learning, with a particular interest in intelligent decision-making and adaptive systems.",
+		links: {
+			email: "JLI160@e.ntu.edu.sg"
+		}
+	},
+	{
+		name: "Jinghan Yang",
+		position: "PhD Student",
+		image: "/people/jinghan-yang.jpg",
+		bio: "Jinghan is a Ph.D. student at NTU MARS Lab, advised by Prof. Jianfei Yang. She obtained her MPhil from the Institute of Data Science at the University of Hong Kong (HKU), advised by Prof. Yanchao Yang and Prof. Ping Luo, and her BSc in Decision Analytics, also from HKU.",
+		research: "She works on large foundation models in the physical world, developing interpretability methods that explain model decisions, guide data curation, and improve training.",
+		links: {
+			website: "https://jinghanyang.github.io/",
+			email: "yangeciel@gmail.com",
+			scholar: "https://scholar.google.com/citations?user=_yo65ZgAAAAJ&hl=en",
+			twitter: "https://x.com/eciel_yang",
+			linkedin: "https://www.linkedin.com/in/jinghan-yang-4b943b197"
+		}
+	},
+	{
+		name: "Bohan Hou",
+		position: "PhD Student",
+		image: "/people/bohan-hou.jpg",
+		bio: "Bohan Hou is a Ph.D. student at the MARS Lab. He received his bachelor's degree in Computer Science with honors from Taishan College, the Honors College of Shandong University.",
+		research: "His research interests focus on building embodied foundation models (as a core contributor to the RynnBrain series), developing unified MLLMs for understanding and generation, such as world models, and creating general-purpose intelligent agents for tasks including multimodal decision-making and information retrieval. His long-term goal is to bridge the gap between virtual intelligence and real-world intelligence, enabling intelligent systems to move progressively from digital environments into everyday life.",
+		links: {
+			website: "https://hbhalpha.github.io/",
+			email: "bohanhou@foxmail.com",
+			scholar: "https://scholar.google.com/citations?user=RLW64pQAAAAJ&hl=zh-CN",
+			github: "https://github.com/hbhalpha"
+		}
+	},
+	{
 		name: "Chuhao Zhou",
 		position: "PhD Student",
 		image: "/people/chuhao-zhou.jpg",
