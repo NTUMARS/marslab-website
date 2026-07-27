@@ -133,18 +133,15 @@
 			link.addEventListener("click", () => (menu = false));
 		}
 
-		// Set up route tracking for page navigation with Swup integration
+		// Track route changes across Swup soft navigations via the 'astro:page-load'
+		// event that @swup/astro re-dispatches from its page:view hook (fires after
+		// content replace + history/URL update, on every actual visit incl.
+		// back/forward). Don't gate this on window.swup: the swup instance is created
+		// lazily in an idle callback, so it's often undefined during hydration, and
+		// the old `swup:enable` fallback never fires in Swup v4 — losing that race
+		// left the active underline stuck on the previous page.
 		const update_route = () => (route = window.location.pathname);
-		if (window.swup) {
-			// Register route update hook if Swup is already available.
-			// Use page:view (fires after content replace + history/URL update, on every
-			// actual visit incl. back/forward) — not page:load, which fires during fetch/
-			// preload when window.location is stale and skips cached navigations, leaving
-			// the active underline stuck on the previous page.
-			window.swup.hooks.on("page:view", update_route);
-		} else {
-			// Wait for Swup to be enabled and then register the hook
-			document.addEventListener("swup:enable", () => window.swup?.hooks.on("page:view", update_route));
-		}
+		document.addEventListener("astro:page-load", update_route);
+		return () => document.removeEventListener("astro:page-load", update_route);
 	});
 </script>

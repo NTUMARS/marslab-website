@@ -193,22 +193,17 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 		document.addEventListener('DOMContentLoaded', initPageFeatures);
 	}
 
-	// Re-run after Swup page transitions
-	if (window.swup) {
-		window.swup.hooks.on('page:view', () => {
-			console.log('Swup page:view event - reinitializing features');
-			// Use requestAnimationFrame to ensure DOM is updated
-			requestAnimationFrame(initPageFeatures);
-		});
-	} else {
-		document.addEventListener('swup:enable', () => {
-			console.log('Swup enabled - registering page:view hook');
-			window.swup?.hooks.on('page:view', () => {
-				console.log('Swup page:view event - reinitializing features');
-				requestAnimationFrame(initPageFeatures);
-			});
-		});
-	}
+	// Re-run after Swup page transitions. Listen to the 'astro:page-load' event
+	// that @swup/astro re-dispatches from its page:view hook rather than touching
+	// window.swup: the swup instance is created lazily in an idle callback, so it
+	// is usually NOT yet defined when this module evaluates — and the old
+	// `swup:enable` fallback never fires in Swup v4 (no such DOM event exists),
+	// which left these features (e.g. the People bio modal) dead after soft
+	// navigations whenever the registration lost that race.
+	document.addEventListener('astro:page-load', () => {
+		// Use requestAnimationFrame to ensure DOM is updated
+		requestAnimationFrame(initPageFeatures);
+	});
 </script>
 
 <App {title} {subtitle} {description} {article} author={typeof config.author == "string" ? config.author : config.author.name}>

@@ -228,6 +228,56 @@ const partners = [
 				</div>
 			</div>
 		</section>
+
+		<!-- Events scroller wiring. MUST stay is:inline INSIDE <main> (the Swup
+		     container): Astro hoists bare <script> tags into <head> as modules,
+		     Swup's head plugin ignores added head scripts, and SwupScriptsPlugin
+		     only re-runs scripts found inside the swapped container — so a hoisted
+		     module never executes when Home is FIRST reached via a soft navigation
+		     (e.g. entering the site on /people, then clicking Home), leaving the
+		     arrows dead. Inline-in-main re-runs on every arrival, hard or soft. -->
+		<script is:inline>
+			(() => {
+				// Native scrollBy({behavior:"smooth"}) rather than a rAF tween: per-frame
+				// scrollLeft writes are flaky in WebKit (root scroll-behavior:smooth leaks
+				// onto descendant scroll boxes and restarts the animation every frame).
+				const scroller = document.querySelector('.events-scroller');
+				if (!scroller) return;
+
+				const prev = document.querySelector('.ev-prev');
+				const next = document.querySelector('.ev-next');
+				const card = scroller.querySelector('.event-card');
+
+				const step = () => (card ? card.getBoundingClientRect().width + 20 : scroller.clientWidth * 0.8);
+				const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				const nudge = (dir) =>
+					scroller.scrollBy({ left: dir * step(), behavior: reduce ? 'auto' : 'smooth' });
+
+				const update = () => {
+					const max = scroller.scrollWidth - scroller.clientWidth - 8;
+					if (prev) prev.disabled = scroller.scrollLeft <= 8;
+					if (next) next.disabled = scroller.scrollLeft >= max;
+				};
+
+				// Each Swup arrival swaps in brand-new elements, so bind per element.
+				// The guard lives in JS memory (WeakSet), never a data-* attribute:
+				// Swup snapshots the live DOM into its page cache, and a baked-in flag
+				// would make restored copies skip binding (see 5f71ee0).
+				if (!window.__evBound) window.__evBound = new WeakSet();
+				if (!window.__evBound.has(scroller)) {
+					window.__evBound.add(scroller);
+					if (prev) prev.addEventListener('click', () => nudge(-1));
+					if (next) next.addEventListener('click', () => nudge(1));
+					scroller.addEventListener('scroll', update, { passive: true });
+				}
+				// The resize listener is window-level: swap it on each run so closures
+				// bound to detached scrollers don't pile up across soft navigations.
+				if (window.__evResize) window.removeEventListener('resize', window.__evResize);
+				window.__evResize = update;
+				window.addEventListener('resize', update);
+				update();
+			})();
+		</script>
 	</main>
 </Base>
 
@@ -503,61 +553,3 @@ const partners = [
 	}
 </style>
 
-<script>
-	// Events scroller — prev/next arrows + edge (disabled) state.
-	// Uses the native scrollBy({behavior:"smooth"}) API rather than a hand-rolled
-	// requestAnimationFrame tween. The old per-frame `scrollLeft = …` writes were
-	// reliable in Chromium but flaky in WebKit/Safari (root `scroll-behavior:smooth`
-	// leaks onto descendant scroll boxes, so each frame restarted its own smooth
-	// animation and the position never advanced → the arrows appeared to "do
-	// nothing"). Native scrollBy animates once and behaves consistently across
-	// engines; a real button click is a user gesture, so smooth scrolling is honoured.
-	// Guard MUST be an in-memory WeakSet, never a data-* attribute: Swup caches the
-	// initial page by snapshotting the live DOM as an HTML string, so a data-* flag
-	// written here gets baked into the cache. On returning Home the restored DOM is
-	// brand-new (no listeners) but already carries the flag, the guard early-returns,
-	// and the arrows are dead forever (same bug the constellation hit; see 7c6caa2).
-	const evBound = new WeakSet<Element>();
-	function setupEventsScroller() {
-		const scroller = document.querySelector('.events-scroller') as HTMLElement | null;
-		if (!scroller) return;
-
-		const prev = document.querySelector('.ev-prev') as HTMLButtonElement | null;
-		const next = document.querySelector('.ev-next') as HTMLButtonElement | null;
-		const card = scroller.querySelector('.event-card') as HTMLElement | null;
-
-		const step = () => (card ? card.getBoundingClientRect().width + 20 : scroller.clientWidth * 0.8);
-		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const nudge = (dir: number) =>
-			scroller.scrollBy({ left: dir * step(), behavior: reduce ? 'auto' : 'smooth' });
-
-		const update = () => {
-			const max = scroller.scrollWidth - scroller.clientWidth - 8;
-			if (prev) prev.disabled = scroller.scrollLeft <= 8;
-			if (next) next.disabled = scroller.scrollLeft >= max;
-		};
-
-		// Bind handlers once per element; update() still runs on every (re-)init so the
-		// disabled state is correct after Swup swaps in a fresh DOM.
-		if (!evBound.has(scroller)) {
-			evBound.add(scroller);
-			prev?.addEventListener('click', () => nudge(-1));
-			next?.addEventListener('click', () => nudge(1));
-			scroller.addEventListener('scroll', update, { passive: true });
-			window.addEventListener('resize', update);
-		}
-		update();
-	}
-	setupEventsScroller();
-	document.addEventListener('astro:page-load', setupEventsScroller);
-
-	// Re-run after Swup page transitions (astro:page-load does NOT fire under Swup,
-	// so without this the arrows lose their handlers when navigating back to home).
-	if (window.swup) {
-		window.swup.hooks.on('page:view', () => requestAnimationFrame(setupEventsScroller));
-	} else {
-		document.addEventListener('swup:enable', () => {
-			window.swup?.hooks.on('page:view', () => requestAnimationFrame(setupEventsScroller));
-		});
-	}
-</script>

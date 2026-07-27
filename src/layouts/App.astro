@@ -78,15 +78,11 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 						// Initial pageview (full document load).
 						sendPageView();
 
-						// Re-send on every Swup client-side navigation.
-						function bindSwupPageView() {
-							if (!window.swup || !window.swup.hooks) return false;
-							window.swup.hooks.on("page:view", sendPageView);
-							return true;
-						}
-						if (!bindSwupPageView()) {
-							document.addEventListener("swup:enable", bindSwupPageView);
-						}
+						// Re-send on every Swup client-side navigation. @swup/astro re-dispatches
+						// 'astro:page-load' from its page:view hook; window.swup itself is created
+						// lazily in an idle callback (and Swup v4 never fires a `swup:enable` DOM
+						// event), so hook registration against the instance is race-prone.
+						document.addEventListener("astro:page-load", sendPageView);
 
 						var FILE_EXT = /\.(pdf|bib|zip|tar|gz|csv|txt|doc|docx|ppt|pptx|xls|xlsx|json|mp4|mov|wav|mp3)(\?.*)?$/i;
 
@@ -181,15 +177,9 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 							}, 250);
 						}, { passive: true });
 
-						// Reset scroll depth on each Swup navigation.
-						function bindSwupScrollReset() {
-							if (!window.swup || !window.swup.hooks) return false;
-							window.swup.hooks.on("page:view", resetDepth);
-							return true;
-						}
-						if (!bindSwupScrollReset()) {
-							document.addEventListener("swup:enable", bindSwupScrollReset);
-						}
+						// Reset scroll depth on each Swup navigation (see the page-view note above
+						// for why this listens to 'astro:page-load' instead of window.swup hooks).
+						document.addEventListener("astro:page-load", resetDepth);
 					})();
 				</script>
 			</>
