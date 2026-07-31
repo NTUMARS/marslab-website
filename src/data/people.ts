@@ -31,19 +31,6 @@ export const people = [
 		}
 	},
 	{
-		name: "Gen Li",
-		position: "Postdoc",
-		image: "/people/gen-li.jpg",
-		bio: "Gen Li is a Postdoctoral Research Fellow at the NTU MARS Lab, advised by Prof. Jianfei Yang. He received his Ph.D. in Robotics and Autonomous Systems from the University of Edinburgh.",
-		research: "His research focuses on developing intelligent physical agents capable of perceiving, reasoning, and acting in real-world environments with human-like capability and high efficiency, spanning Embodied AI, Efficient AI, Multimodal AI, and Human-Centered AI.",
-		links: {
-			website: "https://genli.top/",
-			email: "ligen@g.skku.edu",
-			scholar: "https://scholar.google.com/citations?user=Rfh4mm0AAAAJ",
-			linkedin: "https://linkedin.com/in/gen-li-84bb62191/"
-		}
-	},
-	{
 		name: "Jindou Jia",
 		position: "Postdoc",
 		image: "/people/jindou-jia.jpg",
@@ -364,6 +351,28 @@ export const students = [
 			{ name: "Rongyu Xie", advisor: "Dr. Xinyu Zhou" },
 			{ name: "Lichen Yin", advisor: "Dr. Xinyu Zhou" }
 		]
+	}
+];
+
+// Alumni with full member profiles — same shape as `people` entries. Rendered as
+// regular member cards under their own group inside the Alumni section (photo,
+// links, bio modal all preserved), unlike the plain-text student lists below.
+// To retire a postdoc, move their object here from `people` verbatim: they drop
+// out of the active grid, the home face-marquee and the constellation, but keep
+// their card (and stable /people#<slug> anchor) under Alumni.
+export const alumniPostdocs = [
+	{
+		name: "Gen Li",
+		position: "Postdoc",
+		image: "/people/gen-li.jpg",
+		bio: "Gen Li is a Postdoctoral Research Fellow at the NTU MARS Lab, advised by Prof. Jianfei Yang. He received his Ph.D. in Robotics and Autonomous Systems from the University of Edinburgh.",
+		research: "His research focuses on developing intelligent physical agents capable of perceiving, reasoning, and acting in real-world environments with human-like capability and high efficiency, spanning Embodied AI, Efficient AI, Multimodal AI, and Human-Centered AI.",
+		links: {
+			website: "https://genli.top/",
+			email: "ligen@g.skku.edu",
+			scholar: "https://scholar.google.com/citations?user=Rfh4mm0AAAAJ",
+			linkedin: "https://linkedin.com/in/gen-li-84bb62191/"
+		}
 	}
 ];
 

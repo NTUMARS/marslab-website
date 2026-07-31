@@ -3,7 +3,7 @@ import { i18n } from "astro:config/client";
 import Base from "$layouts/Base.astro";
 import i18nit from "$i18n";
 import Icon from "$components/Icon.astro";
-import { people, students, alumni } from "$data/people";
+import { people, students, alumni, alumniPostdocs } from "$data/people";
 
 export async function getStaticPaths() {
 	return i18n!.locales.map(locale => ({ params: { locale: locale == i18n?.defaultLocale ? undefined : (locale as string) } }));
@@ -157,6 +157,47 @@ const studentGroups = students.map(g => ({
 		<section class="alumni-section">
 			<h2 class="alumni-heading">Alumni</h2>
 			<p class="alumni-intro">We thank all MARS Lab alumni for their invaluable contributions and wish them bright futures ahead.</p>
+
+			<!-- Alumni with full member profiles (currently former postdocs): the same
+			     house card as active members — photo, role, links, bio modal — so
+			     nothing is lost when someone is retired from the roster above. -->
+			{alumniPostdocs.length > 0 && (
+				<div class="alumni-fellows">
+					<h3 class="alumni-group-title">Postdocs</h3>
+					<div class="people-grid alumni-fellows-grid">
+						{alumniPostdocs.map((person) => (
+							<article
+								class="person"
+								id={personId(person.name)}
+								data-name={person.name}
+								data-role={person.position}
+								data-img={person.image ? `${baseUrl}${person.image.replace(/^\//, '')}` : ''}
+								data-bio={person.bio || ''}
+								data-research={person.research || ''}
+							>
+								<div class="person-photo">
+									{person.image ? (
+										<img src={`${baseUrl}${person.image.replace(/^\//, '')}`} alt={person.name} loading="lazy" />
+									) : (
+										<div class="photo-placeholder"><span>{initials(person.name)}</span></div>
+									)}
+								</div>
+								<h3 class="person-name">{person.name}</h3>
+								<p class="person-role">{person.position}</p>
+								{socialLinks(person).length > 0 && (
+									<div class="person-links">
+										{socialLinks(person).map((l) => (
+											<a href={l.url} class="person-link" title={l.label} aria-label={l.label} target="_blank" rel="noopener noreferrer">
+												<Icon name={l.icon} size={16} />
+											</a>
+										))}
+									</div>
+								)}
+							</article>
+						))}
+					</div>
+				</div>
+			)}
 
 			<details class="alumni-collapse">
 				<div class="alumni-collapse-body">
@@ -671,6 +712,16 @@ const studentGroups = students.map(g => ({
 		font-weight: 600;
 		color: var(--primary-color);
 		margin: 0 0 0.6rem 0;
+	}
+
+	/* Full-profile alumni (former postdocs): same card language as the active
+	   member grids above; the group just needs room between the section intro
+	   and the collapsed student list. */
+	.alumni-fellows {
+		margin: 0 0 2.2rem 0;
+	}
+	.alumni-fellows .alumni-group-title {
+		margin-bottom: 1.1rem;
 	}
 
 	.alumni-list {
