@@ -81,6 +81,31 @@ export const people = [
 	},
 	// PhD Students
 	{
+		name: "Zhe Li",
+		position: "PhD Student",
+		image: "/people/zhe-li.jpg",
+		bio: "Zhe Li is a first-year Ph.D. student in Mechanical and Aerospace Engineering at Nanyang Technological University, advised by Prof. Jianfei Yang. Previously, he received his M.S. in Computer Science and Technology from Huazhong University of Science and Technology and his B.S. in Biotechnology from Hunan University. During his master's studies, he interned at Tongyi Lab, Alibaba. After completing his master's degree, he interned in the Beijing Academy of Artificial Intelligence (BAAI) as a researcher, where he led the Humanoid Robotics Group for over one year, focusing on whole-body control and sim-to-real transfer for bipedal humanoid systems.",
+		research: "His current research interests lie broadly in humanoid intelligence, with a particular focus on humanoid locomotion, loco-manipulation, world-action models for physical reasoning, and 3D digital humans.",
+		links: {
+			website: "https://gentlefress.github.io/",
+			email: "keycharon0122@gmail.com",
+			scholar: "https://scholar.google.com/citations?user=U8f81zQAAAAJ&hl=en",
+			github: "https://github.com/gentlefress",
+			twitter: "https://x.com/zheli1039"
+		}
+	},
+	{
+		name: "Yunxi Qiao",
+		position: "PhD Student",
+		image: "/people/yunxi-qiao.jpg",
+		bio: "Yunxi Qiao is a Ph.D. student at the MARS Lab. He graduated from Tsinghua University with a bachelor's degree in Mathematics and Physics through the Mathematical and Physical Sciences program, and is currently an IPP student at Microsoft Research Asia in Singapore.",
+		research: "Curious about the scientific principles behind the physical world, he hopes to apply his interdisciplinary background to the growing research opportunities in AI. He has experience with 3D Gaussian Splatting, Diffusion Transformers, and DiT acceleration, and remains open to different research directions, believing that cross-disciplinary approaches are essential for solving complex problems.",
+		links: {
+			email: "Yunxi_qiao@hotmail.com",
+			linkedin: "https://www.linkedin.com/in/yun-xi-qiao-a27313235"
+		}
+	},
+	{
 		name: "Jiayi Li",
 		position: "PhD Student",
 		image: "/people/jiayi-li.jpg",
