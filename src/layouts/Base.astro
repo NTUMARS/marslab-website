@@ -136,6 +136,10 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 				mPhoto.style.display = img ? '' : 'none';
 				mImg.src = img;
 				mImg.alt = article.dataset.name || '';
+				// Per-person focal point for the cover-cropped modal column (people.ts
+				// `photoPos`, e.g. a subject standing at the right edge of the frame).
+				// Reset to default centering when the person doesn't define one.
+				mImg.style.objectPosition = article.dataset.photoPos || '';
 				mName.textContent = article.dataset.name || '';
 				mRole.textContent = article.dataset.role || '';
 				mBio.innerHTML = '';

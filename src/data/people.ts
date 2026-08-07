@@ -84,6 +84,10 @@ export const people = [
 		name: "Zhe Li",
 		position: "PhD Student",
 		image: "/people/zhe-li.jpg",
+		// He stands at the right edge of the (uncropped) conference photo; this is the
+		// object-position focal point used wherever the image is shown in a non-square
+		// window (e.g. the bio modal's portrait column), so the crop keeps him in view.
+		photoPos: "85% 42%",
 		bio: "Zhe Li is a first-year Ph.D. student in Mechanical and Aerospace Engineering at Nanyang Technological University, advised by Prof. Jianfei Yang. Previously, he received his M.S. in Computer Science and Technology from Huazhong University of Science and Technology and his B.S. in Biotechnology from Hunan University. During his master's studies, he interned at Tongyi Lab, Alibaba. After completing his master's degree, he interned in the Beijing Academy of Artificial Intelligence (BAAI) as a researcher, where he led the Humanoid Robotics Group for over one year, focusing on whole-body control and sim-to-real transfer for bipedal humanoid systems.",
 		research: "His current research interests lie broadly in humanoid intelligence, with a particular focus on humanoid locomotion, loco-manipulation, world-action models for physical reasoning, and 3D digital humans.",
 		links: {

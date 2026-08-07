@@ -108,6 +108,7 @@ const studentGroups = students.map(g => ({
 							data-img={person.image ? `${baseUrl}${person.image.replace(/^\//, '')}` : ''}
 							data-bio={person.bio || ''}
 							data-research={person.research || ''}
+							data-photo-pos={person.photoPos || ''}
 						>
 							<div class="person-photo">
 								{person.image ? (
@@ -174,6 +175,7 @@ const studentGroups = students.map(g => ({
 								data-img={person.image ? `${baseUrl}${person.image.replace(/^\//, '')}` : ''}
 								data-bio={person.bio || ''}
 								data-research={person.research || ''}
+								data-photo-pos={person.photoPos || ''}
 							>
 								<div class="person-photo">
 									{person.image ? (
