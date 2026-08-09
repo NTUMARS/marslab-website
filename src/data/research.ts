@@ -132,6 +132,13 @@ export const sections: ResearchSection[] = [
 						display: "CompassAD: Intent-Driven 3D Affordance Grounding",
 						blurb: "Grounding 3D affordances by intent among functionally competing objects in cluttered scenes.",
 					},
+					{
+						ref: "activevital",
+						display: "ActiveVital: Geometry-Aware Vital Signs Monitoring",
+						blurb: "Treating radar pose as a controllable variable — the robot moves to face the chest and reads respiration and heartbeat cleanly.",
+						// Teaser is a 2.36:1 multi-panel figure; cover would clip the outer panels.
+						fit: "contain",
+					},
 				],
 			},
 		],
