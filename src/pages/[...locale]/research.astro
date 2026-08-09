@@ -207,9 +207,13 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 	   across the name while the numeral and name deepen. Pure typography. */
 	.dir-index a {
 		display: grid;
-		/* Fixed name column (widest is "Human-Robot Interaction" ≈ 207px) so the
-		   description column starts at the same x on every row. */
-		grid-template-columns: 2.9rem 13.5rem 1fr;
+		/* Each row is its own grid, so the name column is a fixed width to keep the
+		   description column starting at the same x on every row. Sized for the
+		   widest name, "Humanoid Whole-Body Loco-Manipulation" (≈ 260px), with a
+		   little slack. Names and descriptions may wrap: a name longer than the
+		   track breaks onto a second line instead of running under the
+		   description, and a long tagline wraps instead of overflowing the page. */
+		grid-template-columns: 2.9rem 17.5rem 1fr;
 		align-items: baseline;
 		column-gap: 1.2rem;
 		padding: 0.85rem 0.15rem;
@@ -227,7 +231,6 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 		justify-self: start; /* don't stretch to the track — underline must end at the text */
 		font-weight: 600;
 		color: var(--primary-color);
-		white-space: nowrap;
 		padding-bottom: 2px;
 		background-image: linear-gradient(currentColor, currentColor);
 		background-repeat: no-repeat;
@@ -239,7 +242,6 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 		font-size: 0.9rem;
 		line-height: 1.6;
 		color: var(--secondary-color);
-		white-space: nowrap;
 		transition: color 0.25s ease;
 	}
 	.dir-index a:hover .idx-num {
@@ -428,16 +430,12 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 	}
 
 	/* ============================== Responsive ============================== */
-	/* The one-line index needs ~931px of content width (main = min(100vw,1000px) − 24px
-	   of padding), so the stacked fallback kicks in below a 1000px viewport. */
+	/* Below ~1000px the 17.5rem name column leaves too little room for the
+	   description beside it, so the name and description stack instead. */
 	@media screen and (max-width: 999px) {
 		.dir-index a {
 			grid-template-columns: 2.6rem 1fr;
 			gap: 0.15rem 0.9rem;
-		}
-		.idx-name,
-		.idx-desc {
-			white-space: normal;
 		}
 		.idx-desc {
 			grid-column: 2;

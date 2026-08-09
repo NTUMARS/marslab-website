@@ -69,7 +69,7 @@ export const sections: ResearchSection[] = [
 		id: "humanoid-loco-manipulation",
 		num: "02",
 		title: "Humanoid Whole-Body Loco-Manipulation",
-		tagline: "Whole-body humanoid control — coordinating locomotion with manipulation, and holding steady under disturbance.",
+		tagline: "Coordinating locomotion with manipulation, and holding steady under real-world disturbance.",
 		groups: [
 			{
 				items: [
