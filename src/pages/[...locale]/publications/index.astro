@@ -98,13 +98,30 @@ const areas = [...knownAreas, ...extraAreas];
 						) : (
 							<div class="placeholder-image"><span class="year-badge">{pub.data.year}</span></div>
 						);
+						// Papers with a demo clip keep the still as the resting state; the
+						// clip layers on top and only streams once the pointer arrives.
+						const media = pub.data.video ? (
+							<Fragment>
+								{thumb}
+								<video
+									class="pub-hover-video"
+									muted
+									loop
+									playsinline
+									preload="none"
+									aria-hidden="true"
+									poster={pub.data.image ? `${baseUrl}${pub.data.image.replace(/^\//, '')}` : undefined}
+									data-src={`${baseUrl}${pub.data.video.replace(/^\//, '')}`}
+								/>
+							</Fragment>
+						) : thumb;
 						return (
 						<article class:list={["publication-card", { featured: pub.data.featured }]} data-year={pub.data.year} data-tags={orderedTags(pub.data.tags).join("|")} data-status={pubStatus(pub.data.venue)}>
 							<div class="pub-aside">
 								{link ? (
-									<a class="pub-thumb" href={link} target="_blank" rel="noopener noreferrer">{thumb}</a>
+									<a class="pub-thumb" href={link} target="_blank" rel="noopener noreferrer">{media}</a>
 								) : (
-									<div class="pub-thumb">{thumb}</div>
+									<div class="pub-thumb">{media}</div>
 								)}
 
 								<div class="pub-venue-row">
@@ -202,6 +219,40 @@ const areas = [...knownAreas, ...extraAreas];
 			</aside>
 
 		</div>
+
+		<!-- Hover-to-play for papers that ship a demo clip.
+		     MUST be is:inline and INSIDE <main>: Astro hoists module scripts into
+		     <head>, but Swup's head plugin ignores <script> tags, so a head script
+		     never runs when this page is first reached via soft navigation. Inside
+		     the swapped container, SwupScriptsPlugin re-runs it on every arrival. -->
+		<script is:inline>
+			(function () {
+				// Touch and reduced-motion visitors keep the still — matches the CSS,
+				// and means the clip is never fetched for someone who can't see it.
+				if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+				var videos = document.querySelectorAll(".pub-hover-video");
+				for (var i = 0; i < videos.length; i++) {
+					(function (video) {
+						var thumb = video.closest(".pub-thumb");
+						if (!thumb) return;
+
+						thumb.addEventListener("mouseenter", function () {
+							// Attach the stream on first hover — nothing downloads until asked for.
+							if (!video.src && video.dataset.src) video.src = video.dataset.src;
+							video.play().catch(function () {});
+						});
+
+						thumb.addEventListener("mouseleave", function () {
+							video.pause();
+							// Rewind so the next hover opens on the clip's first frame.
+							video.currentTime = 0;
+						});
+					})(videos[i]);
+				}
+			})();
+		</script>
 	</main>
 </Base>
 
@@ -339,6 +390,7 @@ const areas = [...knownAreas, ...extraAreas];
 	   cards — quiet at rest, amber hairline on hover. No zoom gimmicks. */
 	.pub-thumb {
 		display: block;
+		position: relative;
 		width: 100%;
 		border-radius: 0;
 		overflow: hidden;
@@ -365,6 +417,32 @@ const areas = [...knownAreas, ...extraAreas];
 	/* Placeholder (papers without an image) keeps a fixed 16:9 frame */
 	.pub-thumb .placeholder-image {
 		aspect-ratio: 16 / 9;
+	}
+
+	/* Demo clip covers the still and cross-fades in under the pointer. It never
+	   affects layout — the still alone sets the plate's height. */
+	.pub-hover-video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.3s ease;
+	}
+
+	/* Only where hovering is a real gesture: on touch the still stays put,
+	   so a tap follows the link instead of revealing an unloaded video. */
+	@media (hover: hover) and (pointer: fine) {
+		.pub-thumb:hover .pub-hover-video,
+		.pub-thumb:focus-visible .pub-hover-video {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pub-hover-video { display: none; }
 	}
 
 	.placeholder-image {

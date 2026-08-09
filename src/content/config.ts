@@ -41,6 +41,9 @@ const publications = defineCollection({
         date: z.string().optional(),
         award: z.string().optional(),
         image: z.string().optional(),
+        // Optional demo clip. The still `image` stays the resting state; the clip
+        // fades in and loops while the pointer sits on the thumbnail.
+        video: z.string().optional(),
         paper: z.string().url().optional(),
         website: z.string().url().optional(),
         code: z.string().url().optional(),
