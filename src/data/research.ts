@@ -3,20 +3,20 @@
 // (without the locale prefix); title/venue/links/teaser are pulled from the
 // collection at build time so nothing is duplicated here. `display` overrides
 // the (often long) paper title with a card-sized name; `media` points to an
-// animated teaser under public/research/ — omit it to fall back to the
-// publication's static image.
+// animated teaser (usually under public/research/, but any site-absolute path
+// works) — omit it to fall back to the publication's static image.
 
 export interface ResearchItem {
 	ref: string; // publications collection id, e.g. "action-to-action-flow-matching"
 	display?: string; // card heading; defaults to the publication title
 	blurb: string; // one editorial line under the heading
 	badge?: "Dataset" | "Benchmark" | "New";
-	media?: { video: string; poster: string }; // paths under /research/
+	media?: { video: string; poster: string }; // site-absolute paths, e.g. /research/foo.mp4
 	fit?: "cover" | "contain"; // escape hatch for teasers that crop badly
 }
 
 export interface ResearchGroup {
-	label?: string; // sub-track heading (only Reliable Robot Learning uses these)
+	label?: string; // optional sub-track heading; no section splits into sub-tracks at present
 	items: ResearchItem[];
 }
 
@@ -28,7 +28,7 @@ export interface ResearchSection {
 	groups: ResearchGroup[];
 }
 
-export const overviewLede = "Our research is organized into four interconnected directions:";
+export const overviewLede = "Our research is organized into five interconnected directions:";
 
 export const overviewClose =
 	"Below are representative research projects, benchmark datasets, and open-source resources developed by our lab.";
@@ -38,10 +38,9 @@ export const sections: ResearchSection[] = [
 		id: "reliable-robot-learning",
 		num: "01",
 		title: "Reliable Robot Learning",
-		tagline: "Robust and feedback-driven learning for manipulation and humanoid control.",
+		tagline: "Robust and feedback-driven learning for precise, dependable manipulation.",
 		groups: [
 			{
-				label: "Manipulation",
 				items: [
 					{
 						ref: "action-to-action-flow-matching",
@@ -64,9 +63,27 @@ export const sections: ResearchSection[] = [
 					},
 				],
 			},
+		],
+	},
+	{
+		id: "humanoid-loco-manipulation",
+		num: "02",
+		title: "Humanoid Whole-Body Loco-Manipulation",
+		tagline: "Whole-body humanoid control — coordinating locomotion with manipulation, and holding steady under disturbance.",
+		groups: [
 			{
-				label: "Humanoid Control",
 				items: [
+					{
+						ref: "omega-0",
+						display: "ω-0: Latent Predictive World Action Model",
+						blurb: "Predicting the world in latent space so a humanoid can walk and manipulate as one concurrent policy.",
+						// Reuses the publications teaser and hover clip rather than duplicating
+						// 3 MB of near-identical media under /research/.
+						media: {
+							video: "/publications/zhe-omega0-arxiv26.mp4",
+							poster: "/publications/zhe-omega0-arxiv26.png",
+						},
+					},
 					{
 						ref: "adapt",
 						display: "ADAPT: Disturbance-Aware Policy Training",
@@ -82,7 +99,7 @@ export const sections: ResearchSection[] = [
 	},
 	{
 		id: "human-robot-interaction",
-		num: "02",
+		num: "03",
 		title: "Human-Robot Interaction",
 		tagline: "Understanding human intention, attention, and communication for natural collaboration.",
 		groups: [
@@ -115,7 +132,7 @@ export const sections: ResearchSection[] = [
 	},
 	{
 		id: "robot-perception",
-		num: "03",
+		num: "04",
 		title: "Robot Perception",
 		tagline: "Exploring new sensors and multimodal perception model beyond vision.",
 		groups: [
@@ -145,7 +162,7 @@ export const sections: ResearchSection[] = [
 	},
 	{
 		id: "physical-agents",
-		num: "04",
+		num: "05",
 		title: "Physical Agents",
 		tagline: "AI agents that bridge digital intelligence with physical environments, devices, and robots.",
 		groups: [
