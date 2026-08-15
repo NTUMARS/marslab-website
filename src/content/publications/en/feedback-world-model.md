@@ -18,6 +18,7 @@ image: "/publications/tuo-feedbackwm-arxiv26.png"
 paper: "https://arxiv.org/abs/2605.15705"
 website: "https://lorenzo-0-0.github.io/Feedback_World_Model/"
 code: "https://github.com/Lorenzo-0-0/Feedback_World_Model"
+featured: true
 tags:
   - "World Models"
   - "Robot Manipulation"
