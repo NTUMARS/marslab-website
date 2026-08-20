@@ -17,16 +17,20 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 const personId = (name: string) => name.toLowerCase().replace(/[^a-z]/g, '');
 const initials = (name: string) => name.split(' ').map(n => n[0]).join('');
 
-// Profile links in a fixed display order (rendered as icon-only chips)
-const socialLinks = (p: any) => [
-	p.links.website && { icon: "lucide:globe", label: "Website", url: p.links.website },
-	p.links.email && { icon: "lucide:mail", label: "Email", url: `mailto:${p.links.email}` },
-	p.links.scholar && { icon: "lucide:graduation-cap", label: "Scholar", url: p.links.scholar },
-	p.links.github && { icon: "simple-icons:github", label: "GitHub", url: p.links.github },
-	p.links.linkedin && { icon: "simple-icons:linkedin", label: "LinkedIn", url: p.links.linkedin },
-	p.links.resume && { icon: "lucide:file-search", label: "Résumé", url: p.links.resume },
-	p.links.twitter && { icon: "simple-icons:x", label: "Twitter", url: p.links.twitter },
-].filter(Boolean) as { icon: string; label: string; url: string }[];
+// Profile links in a fixed display order (rendered as icon-only chips).
+// `links` is optional — e.g. a retired fellow whose card shows no contact chips.
+const socialLinks = (p: any) => {
+	const links = p.links ?? {};
+	return [
+		links.website && { icon: "lucide:globe", label: "Website", url: links.website },
+		links.email && { icon: "lucide:mail", label: "Email", url: `mailto:${links.email}` },
+		links.scholar && { icon: "lucide:graduation-cap", label: "Scholar", url: links.scholar },
+		links.github && { icon: "simple-icons:github", label: "GitHub", url: links.github },
+		links.linkedin && { icon: "simple-icons:linkedin", label: "LinkedIn", url: links.linkedin },
+		links.resume && { icon: "lucide:file-search", label: "Résumé", url: links.resume },
+		links.twitter && { icon: "simple-icons:x", label: "Twitter", url: links.twitter },
+	].filter(Boolean) as { icon: string; label: string; url: string }[];
+};
 
 // Group members into role sections (each person lands in exactly one)
 const sectionDefs = [
@@ -104,7 +108,7 @@ const studentGroups = students.map(g => ({
 							class="person"
 							id={personId(person.name)}
 							data-name={person.name}
-							data-role={person.position}
+							data-role={person.affiliation ? `${person.position} · ${person.affiliation}` : person.position}
 							data-img={person.image ? `${baseUrl}${person.image.replace(/^\//, '')}` : ''}
 							data-bio={person.bio || ''}
 							data-research={person.research || ''}
@@ -119,6 +123,7 @@ const studentGroups = students.map(g => ({
 							</div>
 							<h3 class="person-name">{person.name}</h3>
 							<p class="person-role">{person.position}</p>
+							{person.affiliation && <p class="person-affiliation">{person.affiliation}</p>}
 							{socialLinks(person).length > 0 && (
 								<div class="person-links">
 									{socialLinks(person).map((l) => (
@@ -171,7 +176,7 @@ const studentGroups = students.map(g => ({
 								class="person"
 								id={personId(person.name)}
 								data-name={person.name}
-								data-role={person.position}
+								data-role={person.affiliation ? `${person.position} · ${person.affiliation}` : person.position}
 								data-img={person.image ? `${baseUrl}${person.image.replace(/^\//, '')}` : ''}
 								data-bio={person.bio || ''}
 								data-research={person.research || ''}
@@ -186,6 +191,7 @@ const studentGroups = students.map(g => ({
 								</div>
 								<h3 class="person-name">{person.name}</h3>
 								<p class="person-role">{person.position}</p>
+								{person.affiliation && <p class="person-affiliation">{person.affiliation}</p>}
 								{socialLinks(person).length > 0 && (
 									<div class="person-links">
 										{socialLinks(person).map((l) => (
@@ -378,6 +384,15 @@ const studentGroups = students.map(g => ({
 		text-transform: uppercase;
 		color: var(--secondary-color);
 		margin: 0.2rem 0 0;
+	}
+
+	/* Optional second line under the role — an alum's current university (people.ts `affiliation`). */
+	.person-affiliation {
+		font-size: 0.85rem;
+		font-style: italic;
+		color: var(--secondary-color);
+		margin: 0.3rem 0 0;
+		line-height: 1.35;
 	}
 
 	/* Icon-only profile links */
@@ -724,6 +739,9 @@ const studentGroups = students.map(g => ({
 	}
 	.alumni-fellows .alumni-group-title {
 		margin-bottom: 1.1rem;
+	}
+	.alumni-fellows .person-role {
+		color: var(--accent);
 	}
 
 	.alumni-list {

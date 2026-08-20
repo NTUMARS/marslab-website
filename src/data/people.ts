@@ -79,6 +79,16 @@ export const people = [
 			github: "https://github.com/ShuweiShao"
 		}
 	},
+	{
+		name: "Jiahua Dong",
+		position: "Postdoc",
+		image: "/people/jiahua-dong.jpg",
+		bio: "Jiahua Dong is a Research Fellow at the NTU MARS Lab.",
+		research: "His research focuses on embodied AI, multimodal learning, and world action models, with the goal of developing robust, efficient, and generalizable robot learning systems for open and unstructured environments.",
+		links: {
+			email: "jiahua.dong@ntu.edu.sg"
+		}
+	},
 	// PhD Students
 	{
 		name: "Zhe Li",
@@ -392,16 +402,12 @@ export const students = [
 export const alumniPostdocs = [
 	{
 		name: "Gen Li",
-		position: "Postdoc",
+		position: "Full Professor (海优)",
+		affiliation: "Hunan University",
 		image: "/people/gen-li.jpg",
-		bio: "Gen Li is a Postdoctoral Research Fellow at the NTU MARS Lab, advised by Prof. Jianfei Yang. He received his Ph.D. in Robotics and Autonomous Systems from the University of Edinburgh.",
-		research: "His research focuses on developing intelligent physical agents capable of perceiving, reasoning, and acting in real-world environments with human-like capability and high efficiency, spanning Embodied AI, Efficient AI, Multimodal AI, and Human-Centered AI.",
-		links: {
-			website: "https://genli.top/",
-			email: "ligen@g.skku.edu",
-			scholar: "https://scholar.google.com/citations?user=Rfh4mm0AAAAJ",
-			linkedin: "https://linkedin.com/in/gen-li-84bb62191/"
-		}
+		bio: "Gen Li was a Postdoctoral Research Fellow at the NTU MARS Lab, advised by Prof. Jianfei Yang. He received his Ph.D. in Robotics and Autonomous Systems from the University of Edinburgh. He is now a Full Professor at Hunan University and a recipient of the Excellent Young Scientists Fund (海优).",
+		research: "His research focuses on developing intelligent physical agents capable of perceiving, reasoning, and acting in real-world environments with human-like capability and high efficiency, spanning Embodied AI, Efficient AI, Multimodal AI, and Human-Centered AI."
+		// Profile links removed on request (2026-08-20); they remain in git history.
 	}
 ];
 
