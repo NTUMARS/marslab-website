@@ -9,7 +9,7 @@ authors:
   - Bofan Lyu
   - Xichen Yuan
   - Jianfei Yang
-venue: "arXiv Preprint"
+venue: "IROS 2026"
 year: 2026
 image: "/publications/yanshuo-em-fall-arxiv26.png"
 paper: "https://arxiv.org/abs/2606.11109"

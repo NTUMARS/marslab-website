@@ -19,7 +19,7 @@ authors:
   - Jitendra Malik
   - Yilun Du
   - Jianfei Yang
-venue: "arXiv Preprint"
+venue: "International Journal of Robotics Research (IJRR)"
 year: 2026
 image: "/publications/bohan-wmsurvey-arxiv26.png"
 paper: "https://arxiv.org/abs/2605.00080"

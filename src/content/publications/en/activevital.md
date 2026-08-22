@@ -7,7 +7,7 @@ authors:
   - Gen Li
   - Feng Xu
   - Jianfei Yang
-venue: "arXiv Preprint"
+venue: "IROS 2026"
 year: 2026
 image: "/publications/yuxuan-activevital-arxiv26.png"
 paper: "https://arxiv.org/pdf/2606.30275"
