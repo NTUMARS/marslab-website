@@ -261,6 +261,22 @@ export const people = [
 		}
 	},
 	{
+		name: "Kim Hyun Bin",
+		position: "PhD Student",
+		image: "/people/kim-hyun-bin.jpg",
+		// He stands right of centre in the (square) photo; this keeps him inside the
+		// crop in the bio modal's narrow portrait column.
+		photoPos: "58% 50%",
+		bio: "Kim Hyun Bin is a Ph.D. student at the MARS Lab, Nanyang Technological University (NTU), Singapore, advised by Prof. Jianfei Yang. He obtained his B.Eng. in Computer Science with a second major in Business Administration from NTU, and has previously interned at MediaTek, Huawei and various labs around NTU.",
+		research: "His research prior to his Ph.D. lay in the biomedical domain and video understanding. Starting with his Ph.D., he is interested in improving the long-horizon performance of robots, and in how memory, failure detection and recovery mechanisms come together to form an integrated, robust system of highly intelligent, interpretable and human-like robots.",
+		links: {
+			email: "HYUNBIN001@e.ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=1lYDJ6IAAAAJ&hl=en",
+			github: "https://github.com/vanilladucky",
+			linkedin: "https://www.linkedin.com/in/hyun-bin-kim-891a32202/"
+		}
+	},
+	{
 		name: "Yunjiao Zhou",
 		position: "PhD Student (co-supervised)",
 		image: "/people/yunjiao-zhou.jpg",
