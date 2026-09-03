@@ -418,10 +418,10 @@ export const students = [
 export const alumniPostdocs = [
 	{
 		name: "Gen Li",
-		position: "Full Professor (海优)",
+		position: "Full Professor",
 		affiliation: "Hunan University",
 		image: "/people/gen-li.jpg",
-		bio: "Gen Li was a Postdoctoral Research Fellow at the NTU MARS Lab, advised by Prof. Jianfei Yang. He received his Ph.D. in Robotics and Autonomous Systems from the University of Edinburgh. He is now a Full Professor at Hunan University and a recipient of the Excellent Young Scientists Fund (海优).",
+		bio: "Gen Li was a Postdoctoral Research Fellow at the NTU MARS Lab, advised by Prof. Jianfei Yang. He received his Ph.D. in Robotics and Autonomous Systems from the University of Edinburgh. He is now a Full Professor at Hunan University.",
 		research: "His research focuses on developing intelligent physical agents capable of perceiving, reasoning, and acting in real-world environments with human-like capability and high efficiency, spanning Embodied AI, Efficient AI, Multimodal AI, and Human-Centered AI."
 		// Profile links removed on request (2026-08-20); they remain in git history.
 	}
