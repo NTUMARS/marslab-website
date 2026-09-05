@@ -86,7 +86,8 @@ export const people = [
 		bio: "Jiahua Dong is a Research Fellow at the NTU MARS Lab.",
 		research: "His research focuses on embodied AI, multimodal learning, and world action models, with the goal of developing robust, efficient, and generalizable robot learning systems for open and unstructured environments.",
 		links: {
-			email: "jiahua.dong@ntu.edu.sg"
+			email: "jiahua.dong@ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=xrXqa8AAAAAJ&hl=zh-CN"
 		}
 	},
 	// PhD Students
