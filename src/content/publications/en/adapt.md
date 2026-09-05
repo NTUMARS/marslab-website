@@ -11,7 +11,7 @@ authors:
   - Jingliang Li
   - Geng Li
   - Jianfei Yang
-venue: "arXiv Preprint"
+venue: "CoRL 2026"
 year: 2026
 date: "2026-06"
 image: "/publications/bofan-adapt-arxiv26.png"

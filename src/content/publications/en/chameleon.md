@@ -8,7 +8,7 @@ authors:
   - Ying Sun
   - Yang Xiao
   - Jianfei Yang
-venue: "arXiv Preprint"
+venue: "CoRL 2026"
 year: 2026
 image: "/publications/xinying-chameleon-arxiv26.png"
 paper: "https://arxiv.org/abs/2603.24576"
