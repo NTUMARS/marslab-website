@@ -12,7 +12,7 @@ authors:
   - Xinying Guo
   - Geng Li
   - Jianfei Yang
-venue: "arXiv Preprint"
+venue: "NeurIPS 2026"
 year: 2026
 image: "/publications/tuo-feedbackwm-arxiv26.png"
 paper: "https://arxiv.org/abs/2605.15705"
