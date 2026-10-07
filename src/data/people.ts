@@ -278,6 +278,19 @@ export const people = [
 		}
 	},
 	{
+		name: "Jiaxiao Shi",
+		position: "PhD Student",
+		image: "/people/jiaxiao-shi.jpg",
+		bio: "Jiaxiao Shi is a first-year Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang in the MARS Lab. He received his B.Eng. of Robotics Engineering from Harbin Institute of Technology.",
+		research: "His research focuses on embodied AI, with particular interests in dexterous manipulation, tactile sensing for robot learning, and world-action models.",
+		links: {
+			website: "https://jxxsteven7.github.io/",
+			email: "jiaxiao.shi@ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=rVlBwjQAAAAJ",
+			github: "https://github.com/jxxsteven7"
+		}
+	},
+	{
 		name: "Yunjiao Zhou",
 		position: "PhD Student (co-supervised)",
 		image: "/people/yunjiao-zhou.jpg",
