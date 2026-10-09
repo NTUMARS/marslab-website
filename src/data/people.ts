@@ -92,17 +92,98 @@ export const people = [
 	},
 	// PhD Students
 	{
-		name: "Chuhao Zhou",
+		name: "Zhe Li",
 		position: "PhD Student",
-		image: "/people/chuhao-zhou.jpg",
-		bio: "Chuhao Zhou is a Ph.D. student at the MARS Lab, Nanyang Technological University, advised by Prof. Jianfei Yang. He received his B.E. and M.S. degrees in Computer Science from the Harbin Institute of Technology, Shenzhen, where he was advised by Prof. Guangming Lu and Prof. Jinxing Li.",
-		research: "He develops multimodal AI systems for robotics and embodied perception, enabling robots to perceive, reason, and plan in complex environments by integrating visual, language, and multisensory information. His work spans multimodal foundation models, robotics perception, and embodied decision making.",
+		image: "/people/zhe-li.jpg",
+		// He stands at the right edge of the (uncropped) conference photo; this is the
+		// object-position focal point used wherever the image is shown in a non-square
+		// window (e.g. the bio modal's portrait column), so the crop keeps him in view.
+		photoPos: "85% 42%",
+		bio: "Zhe Li is a first-year Ph.D. student in Mechanical and Aerospace Engineering at Nanyang Technological University, advised by Prof. Jianfei Yang. Previously, he received his M.S. in Computer Science and Technology from Huazhong University of Science and Technology and his B.S. in Biotechnology from Hunan University. During his master's studies, he interned at Tongyi Lab, Alibaba. After completing his master's degree, he interned in the Beijing Academy of Artificial Intelligence (BAAI) as a researcher, where he led the Humanoid Robotics Group for over one year, focusing on whole-body control and sim-to-real transfer for bipedal humanoid systems.",
+		research: "His current research interests lie broadly in humanoid intelligence, with a particular focus on humanoid locomotion, loco-manipulation, world-action models for physical reasoning, and 3D digital humans.",
 		links: {
-			website: "https://chuhaozhou99.github.io/Chuhao-Zhou/",
-			email: "zhouchuhao99@gmail.com",
-			scholar: "https://scholar.google.com/citations?hl=zh-CN&user=dzp5JpMAAAAJ",
-			twitter: "https://x.com/ChuhaoZhou99",
-			linkedin: "https://linkedin.com/in/chuhao-zhou-90a358292"
+			website: "https://gentlefress.github.io/",
+			email: "keycharon0122@gmail.com",
+			scholar: "https://scholar.google.com/citations?user=U8f81zQAAAAJ&hl=en",
+			github: "https://github.com/gentlefress",
+			twitter: "https://x.com/zheli1039"
+		}
+	},
+	{
+		name: "Yunxi Qiao",
+		position: "PhD Student",
+		image: "/people/yunxi-qiao.jpg",
+		bio: "Yunxi Qiao is a Ph.D. student at the MARS Lab. He graduated from Tsinghua University with a bachelor's degree in Mathematics and Physics through the Mathematical and Physical Sciences program, and is currently an IPP student at Microsoft Research Asia in Singapore.",
+		research: "Curious about the scientific principles behind the physical world, he hopes to apply his interdisciplinary background to the growing research opportunities in AI. He has experience with 3D Gaussian Splatting, Diffusion Transformers, and DiT acceleration, and remains open to different research directions, believing that cross-disciplinary approaches are essential for solving complex problems.",
+		links: {
+			email: "Yunxi_qiao@hotmail.com",
+			linkedin: "https://www.linkedin.com/in/yun-xi-qiao-a27313235"
+		}
+	},
+	{
+		name: "Jiayi Li",
+		position: "PhD Student",
+		image: "/people/jiayi-li.jpg",
+		bio: "Jiayi Li is currently a Ph.D. student in the MARS Lab at Nanyang Technological University, under the supervision of Prof. Jianfei Yang. She obtained her Bachelor's degree from the Department of Automation, Tsinghua University, in 2026.",
+		research: "Her research focuses on active perception and robot learning, with a particular interest in intelligent decision-making and adaptive systems.",
+		links: {
+			email: "JLI160@e.ntu.edu.sg"
+		}
+	},
+	{
+		name: "Jinghan Yang",
+		position: "PhD Student",
+		image: "/people/jinghan-yang.jpg",
+		bio: "Jinghan is a Ph.D. student at the NTU MARS Lab, advised by Prof. Jianfei Yang. She obtained MPhil and BSc degrees from the University of Hong Kong.",
+		research: "Her research focuses on Embodied AI with large foundation models in the physical world, where she develops interpretability methods that explain model decisions, guide data curation, and improve training.",
+		links: {
+			website: "https://jinghanyang.com/",
+			email: "yangeciel@gmail.com",
+			scholar: "https://scholar.google.com/citations?user=_yo65ZgAAAAJ&hl=en",
+			twitter: "https://x.com/eciel_yang",
+			linkedin: "https://www.linkedin.com/in/jinghan-yang-4b943b197"
+		}
+	},
+	{
+		name: "Bohan Hou",
+		position: "PhD Student",
+		image: "/people/bohan-hou.jpg",
+		bio: "Bohan Hou is a Ph.D. student at the MARS Lab. He received his bachelor's degree in Computer Science with honors from Taishan College, the Honors College of Shandong University.",
+		research: "His research interests focus on building embodied foundation models (as a core contributor to the RynnBrain series), developing unified MLLMs for understanding and generation, such as world models, and creating general-purpose intelligent agents for tasks including multimodal decision-making and information retrieval. His long-term goal is to bridge the gap between virtual intelligence and real-world intelligence, enabling intelligent systems to move progressively from digital environments into everyday life.",
+		links: {
+			website: "https://hbhalpha.github.io/",
+			email: "bohanhou@foxmail.com",
+			scholar: "https://scholar.google.com/citations?user=RLW64pQAAAAJ&hl=zh-CN",
+			github: "https://github.com/hbhalpha"
+		}
+	},
+	{
+		name: "Kim Hyun Bin",
+		position: "PhD Student",
+		image: "/people/kim-hyun-bin.jpg",
+		// He stands right of centre in the (square) photo; this keeps him inside the
+		// crop in the bio modal's narrow portrait column.
+		photoPos: "58% 50%",
+		bio: "Kim Hyun Bin is a Ph.D. student at the MARS Lab, Nanyang Technological University (NTU), Singapore, advised by Prof. Jianfei Yang. He obtained his B.Eng. in Computer Science with a second major in Business Administration from NTU, and has previously interned at MediaTek, Huawei and various labs around NTU.",
+		research: "His research prior to his Ph.D. lay in the biomedical domain and video understanding. Starting with his Ph.D., he is interested in improving the long-horizon performance of robots, and in how memory, failure detection and recovery mechanisms come together to form an integrated, robust system of highly intelligent, interpretable and human-like robots.",
+		links: {
+			email: "HYUNBIN001@e.ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=1lYDJ6IAAAAJ&hl=en",
+			github: "https://github.com/vanilladucky",
+			linkedin: "https://www.linkedin.com/in/hyun-bin-kim-891a32202/"
+		}
+	},
+	{
+		name: "Jiaxiao Shi",
+		position: "PhD Student",
+		image: "/people/jiaxiao-shi.jpg",
+		bio: "Jiaxiao Shi is a first-year Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang in the MARS Lab. He received his B.Eng. of Robotics Engineering from Harbin Institute of Technology.",
+		research: "His research focuses on embodied AI, with particular interests in dexterous manipulation, tactile sensing for robot learning, and world-action models.",
+		links: {
+			website: "https://jxxsteven7.github.io/",
+			email: "jiaxiao.shi@ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=rVlBwjQAAAAJ",
+			github: "https://github.com/jxxsteven7"
 		}
 	},
 	{
@@ -174,18 +255,6 @@ export const people = [
 		}
 	},
 	{
-		name: "Xinyan Chen",
-		position: "PhD Student",
-		image: "/people/xinyan-chen.jpg",
-		bio: "Xinyan Chen is a Mechanical Engineering Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang. He received his B.Eng. in Electrical and Electronic Engineering (Highest Distinction & Dean's List) from NTU.",
-		research: "His research centers on AIoT sensing and multimodal AI, recently focusing on multimodal foundation models that leverage complementary cross-modal representations for dexterous robotic manipulation.",
-		links: {
-			email: "chen1909@e.ntu.edu.sg",
-			scholar: "https://scholar.google.com.sg/citations?user=XGQNPHAAAAAJ&hl=en",
-			linkedin: "https://www.linkedin.com/in/xinyan-chen-49605a203/"
-		}
-	},
-	{
 		name: "Bofan Lyu",
 		position: "PhD Student",
 		image: "/people/bofan-lyu.png",
@@ -196,98 +265,29 @@ export const people = [
 		}
 	},
 	{
-		name: "Jiayi Li",
+		name: "Chuhao Zhou",
 		position: "PhD Student",
-		image: "/people/jiayi-li.jpg",
-		bio: "Jiayi Li is currently a Ph.D. student in the MARS Lab at Nanyang Technological University, under the supervision of Prof. Jianfei Yang. She obtained her Bachelor's degree from the Department of Automation, Tsinghua University, in 2026.",
-		research: "Her research focuses on active perception and robot learning, with a particular interest in intelligent decision-making and adaptive systems.",
+		image: "/people/chuhao-zhou.jpg",
+		bio: "Chuhao Zhou is a Ph.D. student at the MARS Lab, Nanyang Technological University, advised by Prof. Jianfei Yang. He received his B.E. and M.S. degrees in Computer Science from the Harbin Institute of Technology, Shenzhen, where he was advised by Prof. Guangming Lu and Prof. Jinxing Li.",
+		research: "He develops multimodal AI systems for robotics and embodied perception, enabling robots to perceive, reason, and plan in complex environments by integrating visual, language, and multisensory information. His work spans multimodal foundation models, robotics perception, and embodied decision making.",
 		links: {
-			email: "JLI160@e.ntu.edu.sg"
+			website: "https://chuhaozhou99.github.io/Chuhao-Zhou/",
+			email: "zhouchuhao99@gmail.com",
+			scholar: "https://scholar.google.com/citations?hl=zh-CN&user=dzp5JpMAAAAJ",
+			twitter: "https://x.com/ChuhaoZhou99",
+			linkedin: "https://linkedin.com/in/chuhao-zhou-90a358292"
 		}
 	},
 	{
-		name: "Jinghan Yang",
+		name: "Xinyan Chen",
 		position: "PhD Student",
-		image: "/people/jinghan-yang.jpg",
-		bio: "Jinghan is a Ph.D. student at the NTU MARS Lab, advised by Prof. Jianfei Yang. She obtained MPhil and BSc degrees from the University of Hong Kong.",
-		research: "Her research focuses on Embodied AI with large foundation models in the physical world, where she develops interpretability methods that explain model decisions, guide data curation, and improve training.",
+		image: "/people/xinyan-chen.jpg",
+		bio: "Xinyan Chen is a Mechanical Engineering Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang. He received his B.Eng. in Electrical and Electronic Engineering (Highest Distinction & Dean's List) from NTU.",
+		research: "His research centers on AIoT sensing and multimodal AI, recently focusing on multimodal foundation models that leverage complementary cross-modal representations for dexterous robotic manipulation.",
 		links: {
-			website: "https://jinghanyang.com/",
-			email: "yangeciel@gmail.com",
-			scholar: "https://scholar.google.com/citations?user=_yo65ZgAAAAJ&hl=en",
-			twitter: "https://x.com/eciel_yang",
-			linkedin: "https://www.linkedin.com/in/jinghan-yang-4b943b197"
-		}
-	},
-	{
-		name: "Bohan Hou",
-		position: "PhD Student",
-		image: "/people/bohan-hou.jpg",
-		bio: "Bohan Hou is a Ph.D. student at the MARS Lab. He received his bachelor's degree in Computer Science with honors from Taishan College, the Honors College of Shandong University.",
-		research: "His research interests focus on building embodied foundation models (as a core contributor to the RynnBrain series), developing unified MLLMs for understanding and generation, such as world models, and creating general-purpose intelligent agents for tasks including multimodal decision-making and information retrieval. His long-term goal is to bridge the gap between virtual intelligence and real-world intelligence, enabling intelligent systems to move progressively from digital environments into everyday life.",
-		links: {
-			website: "https://hbhalpha.github.io/",
-			email: "bohanhou@foxmail.com",
-			scholar: "https://scholar.google.com/citations?user=RLW64pQAAAAJ&hl=zh-CN",
-			github: "https://github.com/hbhalpha"
-		}
-	},
-	{
-		name: "Zhe Li",
-		position: "PhD Student",
-		image: "/people/zhe-li.jpg",
-		// He stands at the right edge of the (uncropped) conference photo; this is the
-		// object-position focal point used wherever the image is shown in a non-square
-		// window (e.g. the bio modal's portrait column), so the crop keeps him in view.
-		photoPos: "85% 42%",
-		bio: "Zhe Li is a first-year Ph.D. student in Mechanical and Aerospace Engineering at Nanyang Technological University, advised by Prof. Jianfei Yang. Previously, he received his M.S. in Computer Science and Technology from Huazhong University of Science and Technology and his B.S. in Biotechnology from Hunan University. During his master's studies, he interned at Tongyi Lab, Alibaba. After completing his master's degree, he interned in the Beijing Academy of Artificial Intelligence (BAAI) as a researcher, where he led the Humanoid Robotics Group for over one year, focusing on whole-body control and sim-to-real transfer for bipedal humanoid systems.",
-		research: "His current research interests lie broadly in humanoid intelligence, with a particular focus on humanoid locomotion, loco-manipulation, world-action models for physical reasoning, and 3D digital humans.",
-		links: {
-			website: "https://gentlefress.github.io/",
-			email: "keycharon0122@gmail.com",
-			scholar: "https://scholar.google.com/citations?user=U8f81zQAAAAJ&hl=en",
-			github: "https://github.com/gentlefress",
-			twitter: "https://x.com/zheli1039"
-		}
-	},
-	{
-		name: "Yunxi Qiao",
-		position: "PhD Student",
-		image: "/people/yunxi-qiao.jpg",
-		bio: "Yunxi Qiao is a Ph.D. student at the MARS Lab. He graduated from Tsinghua University with a bachelor's degree in Mathematics and Physics through the Mathematical and Physical Sciences program, and is currently an IPP student at Microsoft Research Asia in Singapore.",
-		research: "Curious about the scientific principles behind the physical world, he hopes to apply his interdisciplinary background to the growing research opportunities in AI. He has experience with 3D Gaussian Splatting, Diffusion Transformers, and DiT acceleration, and remains open to different research directions, believing that cross-disciplinary approaches are essential for solving complex problems.",
-		links: {
-			email: "Yunxi_qiao@hotmail.com",
-			linkedin: "https://www.linkedin.com/in/yun-xi-qiao-a27313235"
-		}
-	},
-	{
-		name: "Kim Hyun Bin",
-		position: "PhD Student",
-		image: "/people/kim-hyun-bin.jpg",
-		// He stands right of centre in the (square) photo; this keeps him inside the
-		// crop in the bio modal's narrow portrait column.
-		photoPos: "58% 50%",
-		bio: "Kim Hyun Bin is a Ph.D. student at the MARS Lab, Nanyang Technological University (NTU), Singapore, advised by Prof. Jianfei Yang. He obtained his B.Eng. in Computer Science with a second major in Business Administration from NTU, and has previously interned at MediaTek, Huawei and various labs around NTU.",
-		research: "His research prior to his Ph.D. lay in the biomedical domain and video understanding. Starting with his Ph.D., he is interested in improving the long-horizon performance of robots, and in how memory, failure detection and recovery mechanisms come together to form an integrated, robust system of highly intelligent, interpretable and human-like robots.",
-		links: {
-			email: "HYUNBIN001@e.ntu.edu.sg",
-			scholar: "https://scholar.google.com/citations?user=1lYDJ6IAAAAJ&hl=en",
-			github: "https://github.com/vanilladucky",
-			linkedin: "https://www.linkedin.com/in/hyun-bin-kim-891a32202/"
-		}
-	},
-	{
-		name: "Jiaxiao Shi",
-		position: "PhD Student",
-		image: "/people/jiaxiao-shi.jpg",
-		bio: "Jiaxiao Shi is a first-year Ph.D. student at Nanyang Technological University, advised by Prof. Jianfei Yang in the MARS Lab. He received his B.Eng. of Robotics Engineering from Harbin Institute of Technology.",
-		research: "His research focuses on embodied AI, with particular interests in dexterous manipulation, tactile sensing for robot learning, and world-action models.",
-		links: {
-			website: "https://jxxsteven7.github.io/",
-			email: "jiaxiao.shi@ntu.edu.sg",
-			scholar: "https://scholar.google.com/citations?user=rVlBwjQAAAAJ",
-			github: "https://github.com/jxxsteven7"
+			email: "chen1909@e.ntu.edu.sg",
+			scholar: "https://scholar.google.com.sg/citations?user=XGQNPHAAAAAJ&hl=en",
+			linkedin: "https://www.linkedin.com/in/xinyan-chen-49605a203/"
 		}
 	},
 	{
