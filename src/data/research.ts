@@ -66,9 +66,9 @@ export const sections: ResearchSection[] = [
 		],
 	},
 	{
-		id: "humanoid-loco-manipulation",
+		id: "humanoid-robots",
 		num: "02",
-		title: "Humanoid Whole-Body Loco-Manipulation",
+		title: "Humanoid Robots",
 		tagline: "Coordinating locomotion with manipulation, and holding steady under real-world disturbance.",
 		groups: [
 			{
@@ -98,8 +98,16 @@ export const sections: ResearchSection[] = [
 		],
 	},
 	{
-		id: "human-robot-interaction",
+		id: "agentic-robots",
 		num: "03",
+		title: "Agentic Robots",
+		tagline: "Robots that reason, plan, and act on their own through long-horizon physical tasks.",
+		// No published work in this direction yet — the heading stands alone.
+		groups: [],
+	},
+	{
+		id: "human-robot-interaction",
+		num: "04",
 		title: "Human-Robot Interaction",
 		tagline: "Understanding human intention, attention, and communication for natural collaboration.",
 		groups: [
@@ -131,9 +139,9 @@ export const sections: ResearchSection[] = [
 		],
 	},
 	{
-		id: "robot-perception",
-		num: "04",
-		title: "Robot Perception",
+		id: "robot-sensor-perception",
+		num: "05",
+		title: "Robot Sensor and Perception",
 		tagline: "Exploring new sensors and multimodal perception model beyond vision.",
 		groups: [
 			{
@@ -156,18 +164,6 @@ export const sections: ResearchSection[] = [
 						// Teaser is a 2.36:1 multi-panel figure; cover would clip the outer panels.
 						fit: "contain",
 					},
-				],
-			},
-		],
-	},
-	{
-		id: "physical-agents",
-		num: "05",
-		title: "Physical Agents",
-		tagline: "AI agents that bridge digital intelligence with physical environments, devices, and robots.",
-		groups: [
-			{
-				items: [
 					{
 						ref: "iot-llm",
 						display: "IoT-LLM: LLM Reasoning over Real-World Sensors",
