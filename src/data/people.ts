@@ -387,6 +387,20 @@ export const people = [
 			scholar: "https://scholar.google.com/citations?user=SZg1xeoAAAAJ&hl=zh-CN"
 		}
 	},
+	{
+		name: "Zhuoyuan Yu",
+		position: "Research Assistant",
+		image: "/people/zhuoyuan-yu.jpg",
+		bio: "Zhuoyuan Yu is a Research Assistant at the NTU MARS Lab, advised by Prof. Jianfei Yang.",
+		research: "His research focuses on embodied intelligence, robot learning, and autonomous robotic systems, particularly real-to-sim-to-real learning and robotic self-improvement. His work explores how robots can autonomously learn from failures, adapt to changing environments, and continuously improve their capabilities through agentic reasoning, simulation-based learning, and real-world interaction.",
+		links: {
+			website: "https://zhuoyuanyu.com/",
+			email: "zhuoyuan.yu@ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=z8m9AYEAAAAJ&hl=en",
+			github: "https://github.com/YUJ0E",
+			linkedin: "https://www.linkedin.com/in/zhuoyuan-yu-135245291/"
+		}
+	},
 ];
 
 // Current students listed by name only (no photo/bio), grouped by degree level.
