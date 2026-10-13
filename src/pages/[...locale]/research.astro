@@ -131,6 +131,12 @@ const cardLink = (pub: any): string | undefined => pub.data.website || pub.data.
 															<span>Code</span>
 														</a>
 													)}
+													{pub.data.dataset && (
+														<a href={pub.data.dataset} target="_blank" rel="noopener noreferrer">
+															<Icon name="lucide:database" size={14} />
+															<span>Dataset</span>
+														</a>
+													)}
 												</div>
 											</div>
 										</article>

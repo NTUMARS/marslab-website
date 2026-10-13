@@ -152,6 +152,7 @@ export default defineConfig({
           "clock-arrow-up",
           "code",
           "copyright",
+          "database",
           "earth",
           "ellipsis",
           "feather",

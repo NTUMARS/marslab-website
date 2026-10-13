@@ -47,6 +47,7 @@ const publications = defineCollection({
         paper: z.string().url().optional(),
         website: z.string().url().optional(),
         code: z.string().url().optional(),
+        dataset: z.string().url().optional(),
         link: z.string().url().optional(),
         doi: z.string().optional(),
         tags: z.array(z.string()).optional(),

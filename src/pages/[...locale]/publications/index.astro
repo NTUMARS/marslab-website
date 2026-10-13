@@ -148,7 +148,7 @@ const areas = [...knownAreas, ...extraAreas];
 									</div>
 								)}
 
-								{(pub.data.paper || pub.data.website || pub.data.code) && (
+								{(pub.data.paper || pub.data.website || pub.data.code || pub.data.dataset) && (
 									<div class="publication-links">
 										{pub.data.paper && (
 											<a href={pub.data.paper} target="_blank" rel="noopener noreferrer" class="pub-link">
@@ -166,6 +166,12 @@ const areas = [...knownAreas, ...extraAreas];
 											<a href={pub.data.code} target="_blank" rel="noopener noreferrer" class="pub-link">
 												<Icon name="lucide:code" size={16} />
 												<span>Code</span>
+											</a>
+										)}
+										{pub.data.dataset && (
+											<a href={pub.data.dataset} target="_blank" rel="noopener noreferrer" class="pub-link">
+												<Icon name="lucide:database" size={16} />
+												<span>Dataset</span>
 											</a>
 										)}
 									</div>
