@@ -90,6 +90,20 @@ export const people = [
 			scholar: "https://scholar.google.com/citations?user=xrXqa8AAAAAJ&hl=zh-CN"
 		}
 	},
+	{
+		name: "An Li",
+		position: "Postdoc",
+		image: "/people/an-li.jpg",
+		// Conference shot with his poster on the right: he stands in the left half,
+		// so keep him in view where the bio modal crops the square photo.
+		photoPos: "4% 22%",
+		bio: "An Li is a Postdoctoral Research Fellow at Nanyang Technological University, working with Prof. Jianfei Yang and Prof. I-Ming Chen. He completed his Ph.D. in 2022 at the School of Electrical and Electronic Engineering, Huazhong University of Science and Technology (HUST).",
+		research: "His research focuses on magnetic-adhesion legged robots for building and maintaining large steel structures. He draws on his background in electromagnetic actuation to develop controllable electro-permanent magnet feet and high-force-density joint actuators. He also works on motion control under adhesion constraints. The goal is robots that can walk across steel walls, move from one wall to another, and carry out tasks on them.",
+		links: {
+			email: "an.li@ntu.edu.sg",
+			ieee: "https://ieeexplore.ieee.org/author/37086328940"
+		}
+	},
 	// PhD Students
 	{
 		name: "Zhe Li",
