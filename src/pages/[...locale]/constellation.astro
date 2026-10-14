@@ -26,9 +26,9 @@ const C = 320;           // centre
 const SUN = 128;         // PI avatar diameter
 const AV = 46;           // member avatar diameter
 const RINGS = [
-	{ r: 122, dur: 140, reverse: false },
-	{ r: 190, dur: 190, reverse: true },
-	{ r: 258, dur: 240, reverse: false },
+	{ r: 124, dur: 140, reverse: false },
+	{ r: 195, dur: 190, reverse: true },
+	{ r: 266, dur: 240, reverse: false },
 ];
 
 // Seats per ring ∝ ring circumference (largest remainder), so every orbit keeps the
@@ -74,14 +74,6 @@ const ticks = Array.from({ length: 72 }, (_, i) => {
 	return { x1, y1, x2, y2, major };
 });
 
-// Roster census under the dial (same role buckets as the People page).
-const census = [
-	{ n: people.filter(p => p.position === "Principal Investigator").length, one: "Principal Investigator", many: "Principal Investigators" },
-	{ n: people.filter(p => p.position === "Postdoc").length, one: "Postdoc", many: "Postdocs" },
-	{ n: people.filter(p => p.position.startsWith("PhD")).length, one: "PhD Student", many: "PhD Students" },
-	{ n: people.filter(p => /MEng|Master/.test(p.position)).length, one: "MEng Student", many: "MEng Students" },
-	{ n: people.filter(p => p.position === "Research Assistant").length, one: "Research Assistant", many: "Research Assistants" },
-].filter(group => group.n > 0);
 ---
 
 <Base title="The MARS Lab" {locale}>
@@ -106,23 +98,11 @@ const census = [
 							<stop offset="0.5" class="cs-stop-mid" />
 							<stop offset="1" class="cs-stop-lo" />
 						</linearGradient>
-						<path id="cs-arc-top" d="M 15.5 320 A 304.5 304.5 0 0 1 624.5 320" />
-						<path id="cs-arc-bottom" d="M 15.5 320 A 304.5 304.5 0 0 0 624.5 320" />
 					</defs>
 
-					<!-- seal band: double rim outside, double rim inside, inscription between -->
+					<!-- rim: a quiet double hairline -->
 					<circle class="cs-rim cs-rim--outer" cx={C} cy={C} r="318" />
-					<circle class="cs-rim cs-rim--outer-2" cx={C} cy={C} r="314.5" />
-					<circle class="cs-rim cs-rim--inner" cx={C} cy={C} r="291" />
-					<circle class="cs-rim cs-rim--inner-2" cx={C} cy={C} r="287.5" />
-					<text class="cs-inscription" dominant-baseline="central">
-						<textPath href="#cs-arc-top" startOffset="50%" text-anchor="middle">Multimodal Embodied AI and Robotic Systems</textPath>
-					</text>
-					<text class="cs-inscription" dominant-baseline="central">
-						<textPath href="#cs-arc-bottom" startOffset="50%" text-anchor="middle">Nanyang Technological University · Singapore</textPath>
-					</text>
-					<path class="cs-stud" d="M 15.5 315.6 L 18.6 320 L 15.5 324.4 L 12.4 320 Z" />
-					<path class="cs-stud" d="M 624.5 315.6 L 627.6 320 L 624.5 324.4 L 621.4 320 Z" />
+					<circle class="cs-rim cs-rim--inner" cx={C} cy={C} r="313.5" />
 
 					{orbits.map((orbit, ri) => (
 						<circle class={`cs-orbit cs-orbit-${ri}`} cx={C} cy={C} r={orbit.r} style={`--len:${orbit.len}; --ri:${ri}`} />
@@ -168,52 +148,50 @@ const census = [
 				))}
 			</div>
 		</div>
-
-		<ul class="cp-census" aria-label="Lab members by role">
-			{census.map((group) => (
-				<li><b>{group.n}</b>{group.n === 1 ? group.one : group.many}</li>
-			))}
-		</ul>
 	</main>
 </Base>
 
 <style>
 	/* ===================== PAGE ===================== */
 	.constellation-page {
-		/* instrument palette — warm gold on porcelain */
-		--cs-gold: #C2860E;
-		--cs-ink: #8F5B0B;
-		--cs-line: rgba(194, 134, 14, 0.28);
-		--cs-line-hot: rgba(194, 134, 14, 0.78);
-		--cs-shade: 96, 62, 14;
-		--cs-plate-hi: #FFFEFA;
-		--cs-plate-lo: #F7F0E2;
-		--cs-glint: rgba(255, 255, 255, 0.85);
+		/* instrument palette — pale champagne on porcelain */
+		--cs-gold: #B9975E;
+		--cs-ink: #9A7B4A;
+		--cs-line: rgba(185, 151, 94, 0.2);
+		--cs-line-hot: rgba(185, 151, 94, 0.7);
+		--cs-hair: rgba(185, 151, 94, 0.34);
+		--cs-shade: 112, 96, 70;
+		--cs-plate-hi: #FFFFFF;
+		--cs-plate-lo: #FBF9F4;
+		--cs-glow: rgba(185, 151, 94, 0.055);
+		--cs-glint: rgba(255, 255, 255, 0.9);
 
 		display: flex; flex-direction: column; align-items: center;
 		gap: 1.7rem; min-height: 72vh; padding: 0.25rem 0 3.5rem;
 		overflow-x: clip;
 	}
 	:global([data-theme="dark"]) .constellation-page {
-		--cs-gold: #D9A441;
-		--cs-ink: #D9A441;
-		--cs-line: rgba(217, 164, 65, 0.24);
-		--cs-line-hot: rgba(217, 164, 65, 0.8);
+		--cs-gold: #CDB27E;
+		--cs-ink: #CDB27E;
+		--cs-line: rgba(205, 178, 126, 0.17);
+		--cs-line-hot: rgba(205, 178, 126, 0.7);
+		--cs-hair: rgba(205, 178, 126, 0.3);
 		--cs-shade: 0, 0, 0;
-		--cs-plate-hi: #393834;
-		--cs-plate-lo: #2A2927;
-		--cs-glint: rgba(255, 255, 255, 0.06);
+		--cs-plate-hi: #363532;
+		--cs-plate-lo: #2C2B29;
+		--cs-glow: rgba(205, 178, 126, 0.045);
+		--cs-glint: rgba(255, 255, 255, 0.05);
 	}
 
 	.cp-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
 	.cp-kicker {
 		display: flex; align-items: center; gap: 0.9rem; margin: 0;
 		font-family: var(--monospace); font-size: 0.68rem; font-weight: 600;
-		letter-spacing: 0.34em; text-transform: uppercase; color: var(--accent);
+		letter-spacing: 0.34em; text-transform: uppercase; color: var(--cs-ink);
 	}
 	.cp-kicker span { margin-right: -0.34em; } /* cancel the trailing tracking so the word centres */
 	.cp-kicker::before,
-	.cp-kicker::after { content: ""; width: 2.4rem; height: 1px; background: var(--cs-gold); opacity: 0.55; }
+	.cp-kicker::after { content: ""; width: 2.4rem; height: 1px; background: var(--cs-gold); opacity: 0.5; }
 	.cp-title {
 		margin: 0; font-family: "KaTeX_Main", var(--serif); font-weight: 400;
 		font-size: 2.65rem; line-height: 1.1; letter-spacing: 0.01em; color: var(--primary-color);
@@ -243,39 +221,29 @@ const census = [
 	.cs-plate {
 		position: absolute; inset: calc(2 * var(--u)); border-radius: 50%;
 		background:
-			radial-gradient(circle at 50% 50%, rgba(194, 134, 14, 0.13) 0, rgba(194, 134, 14, 0) 27%),
-			radial-gradient(circle at 50% 36%, var(--cs-plate-hi) 0%, var(--cs-plate-lo) 100%);
+			radial-gradient(circle at 50% 50%, var(--cs-glow) 0, transparent 26%),
+			radial-gradient(circle at 50% 34%, var(--cs-plate-hi) 0%, var(--cs-plate-lo) 100%);
 		box-shadow:
 			inset 0 1px 0 var(--cs-glint),
-			0 40px 70px -48px rgba(var(--cs-shade), 0.5),
-			0 14px 30px -24px rgba(var(--cs-shade), 0.32);
+			0 36px 64px -46px rgba(var(--cs-shade), 0.34),
+			0 10px 26px -22px rgba(var(--cs-shade), 0.2);
 		animation: cs-fade 0.9s ease backwards;
 	}
 	.cs-plate::before {
 		content: ""; position: absolute; inset: 0; border-radius: 50%;
-		background: repeating-conic-gradient(from 0deg, rgba(var(--cs-shade), 0.032) 0deg 0.3deg, transparent 0.3deg 1.2deg);
+		background: repeating-conic-gradient(from 0deg, rgba(var(--cs-shade), 0.015) 0deg 0.3deg, transparent 0.3deg 1.2deg);
 		-webkit-mask: radial-gradient(circle, transparent 15%, #000 36%, #000 86%, transparent 91%);
 		mask: radial-gradient(circle, transparent 15%, #000 36%, #000 86%, transparent 91%);
 	}
 
 	.cs-dial { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
-	.cs-stop-hi { stop-color: #ECD394; }
-	.cs-stop-mid { stop-color: #C2860E; }
-	.cs-stop-lo { stop-color: #8A5606; }
+	.cs-stop-hi { stop-color: #E6D6B4; }
+	.cs-stop-mid { stop-color: #CDB386; }
+	.cs-stop-lo { stop-color: #A98B58; }
 
 	.cs-rim { fill: none; stroke: var(--cs-gold); vector-effect: non-scaling-stroke; }
-	.cs-rim--outer { stroke: url(#cs-rim-grad); stroke-width: 1.5; }
-	.cs-rim--outer-2 { stroke-width: 0.7; opacity: 0.5; }
-	.cs-rim--inner { stroke-width: 0.9; opacity: 0.6; }
-	.cs-rim--inner-2 { stroke-width: 0.6; opacity: 0.32; }
-
-	.cs-inscription {
-		font-family: "KaTeX_Main", var(--serif); font-size: 10.5px;
-		letter-spacing: 0.34em; text-transform: uppercase;
-		fill: var(--cs-ink); dominant-baseline: central;
-		animation: cs-fade 1.4s ease 0.6s backwards;
-	}
-	.cs-stud { fill: var(--cs-gold); animation: cs-fade 1.4s ease 0.6s backwards; }
+	.cs-rim--outer { stroke: url(#cs-rim-grad); stroke-width: 1.1; }
+	.cs-rim--inner { stroke-width: 0.6; opacity: 0.4; }
 
 	.cs-orbit {
 		fill: none; stroke: var(--cs-line); stroke-width: 1; vector-effect: non-scaling-stroke;
@@ -286,10 +254,10 @@ const census = [
 		transition: stroke 0.35s ease;
 	}
 
-	.cs-halo { fill: none; stroke: var(--cs-gold); stroke-width: 1; opacity: 0.55; vector-effect: non-scaling-stroke; }
+	.cs-halo { fill: none; stroke: var(--cs-gold); stroke-width: 0.9; opacity: 0.5; vector-effect: non-scaling-stroke; }
 	.cs-ticks { animation: cs-fade 1s ease 0.35s backwards; }
-	.cs-tick { stroke: var(--cs-gold); stroke-width: 0.8; opacity: 0.5; vector-effect: non-scaling-stroke; }
-	.cs-tick--major { stroke-width: 1.2; opacity: 0.95; }
+	.cs-tick { stroke: var(--cs-gold); stroke-width: 0.7; opacity: 0.4; vector-effect: non-scaling-stroke; }
+	.cs-tick--major { stroke-width: 1.1; opacity: 0.8; }
 
 	/* ===================== PI ===================== */
 	.sun {
@@ -304,9 +272,9 @@ const census = [
 		border: 3px solid var(--background-color);
 		background: var(--block-color);
 		box-shadow:
-			0 0 0 1px rgba(194, 134, 14, 0.55),
-			0 20px 34px -16px rgba(var(--cs-shade), 0.55),
-			0 2px 5px rgba(var(--cs-shade), 0.18);
+			0 0 0 1px var(--cs-hair),
+			0 18px 32px -16px rgba(var(--cs-shade), 0.42),
+			0 2px 5px rgba(var(--cs-shade), 0.12);
 		transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
 		animation: cs-pop 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s backwards;
 	}
@@ -337,7 +305,7 @@ const census = [
 		content: ""; position: absolute; left: 50%; top: 100%;
 		width: 1px; margin-left: -0.5px;
 		height: calc(var(--spoke) * var(--u));
-		background: linear-gradient(to bottom, var(--cs-gold), rgba(194, 134, 14, 0.55));
+		background: var(--cs-gold);
 		transform: scaleY(0); transform-origin: 50% 0;
 		transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 		pointer-events: none;
@@ -364,9 +332,9 @@ const census = [
 		border: 2px solid var(--background-color);
 		background: var(--block-color);
 		box-shadow:
-			0 0 0 1px rgba(194, 134, 14, 0.45),
-			0 9px 16px -8px rgba(var(--cs-shade), 0.55),
-			0 1px 2px rgba(var(--cs-shade), 0.18);
+			0 0 0 1px var(--cs-hair),
+			0 8px 14px -8px rgba(var(--cs-shade), 0.42),
+			0 1px 2px rgba(var(--cs-shade), 0.12);
 		transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
 		animation: cs-pop 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 		animation-delay: calc(0.5s + var(--i) * 26ms);
@@ -379,8 +347,8 @@ const census = [
 		padding: 6px 12px 7px;
 		white-space: nowrap;
 		background: var(--background-color);
-		border: 1px solid rgba(194, 134, 14, 0.42);
-		box-shadow: 0 14px 28px -14px rgba(var(--cs-shade), 0.5), 0 1px 2px rgba(var(--cs-shade), 0.1);
+		border: 1px solid var(--cs-hair);
+		box-shadow: 0 14px 28px -16px rgba(var(--cs-shade), 0.4), 0 1px 2px rgba(var(--cs-shade), 0.08);
 		transform: translateX(-50%);
 		pointer-events: none;
 	}
@@ -399,7 +367,7 @@ const census = [
 	.cs-label-name { font-family: "KaTeX_Main", var(--serif); font-size: 15px; line-height: 1.15; color: var(--primary-color); }
 	.cs-label-role {
 		font-family: var(--monospace); font-size: 9px; font-weight: 600; line-height: 1.2;
-		letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+		letter-spacing: 0.16em; text-transform: uppercase; color: var(--cs-ink);
 	}
 
 	/* ===================== INTERACTION ===================== */
@@ -413,8 +381,8 @@ const census = [
 		transform: scale(1.22);
 		box-shadow:
 			0 0 0 1.5px var(--cs-gold),
-			0 16px 26px -10px rgba(var(--cs-shade), 0.55),
-			0 2px 4px rgba(var(--cs-shade), 0.2);
+			0 16px 26px -12px rgba(var(--cs-shade), 0.45),
+			0 2px 4px rgba(var(--cs-shade), 0.14);
 	}
 	.planet:hover::before,
 	.planet:focus-visible::before { transform: scaleY(1); }
@@ -430,8 +398,8 @@ const census = [
 		transform: scale(1.04);
 		box-shadow:
 			0 0 0 1.5px var(--cs-gold),
-			0 24px 40px -16px rgba(var(--cs-shade), 0.6),
-			0 2px 5px rgba(var(--cs-shade), 0.2);
+			0 22px 38px -18px rgba(var(--cs-shade), 0.48),
+			0 2px 5px rgba(var(--cs-shade), 0.14);
 	}
 	.sun:focus-visible { outline: none; }
 
@@ -439,22 +407,6 @@ const census = [
 	.constellation:has(.orbit-1 .planet:is(:hover, :focus-visible)) .cs-orbit-1,
 	.constellation:has(.orbit-2 .planet:is(:hover, :focus-visible)) .cs-orbit-2 { stroke: var(--cs-line-hot); }
 
-	/* ===================== CENSUS ===================== */
-	.cp-census {
-		display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline;
-		gap: 0.5rem 0; margin: 0.4rem 0 0; padding: 0; list-style: none;
-		font-family: var(--monospace); font-size: 0.66rem; font-weight: 600;
-		letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary-color);
-	}
-	.cp-census li { display: inline-flex; align-items: baseline; gap: 0.5em; }
-	.cp-census li + li::before {
-		content: ""; align-self: center; width: 4px; height: 4px; margin: 0 1.1rem;
-		background: var(--cs-gold); transform: rotate(45deg); opacity: 0.8;
-	}
-	.cp-census b {
-		font-family: "KaTeX_Main", var(--serif); font-size: 1.2rem; font-weight: 400;
-		letter-spacing: 0; color: var(--accent);
-	}
 
 	/* ===================== MOTION ===================== */
 	@property --spin { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
@@ -471,19 +423,17 @@ const census = [
 
 	@media (prefers-reduced-motion: reduce) {
 		.orbit, .planet-spin, .planet img, .sun img,
-		.cs-plate, .cs-orbit, .cs-inscription, .cs-stud, .cs-ticks { animation: none !important; }
+		.cs-plate, .cs-orbit, .cs-ticks { animation: none !important; }
 		.planet::before, .planet::after { transition: none; }
 		.cs-label { animation: none !important; }
 	}
 
 	/* ===================== SMALL DIALS ===================== */
 	@container (max-width: 470px) {
-		.cs-inscription, .cs-stud, .cs-tick:not(.cs-tick--major) { display: none; }
+		.cs-tick:not(.cs-tick--major) { display: none; }
 	}
 	@media (max-width: 768px) {
 		.constellation-page { gap: 1.4rem; }
 		.cp-title { font-size: 2.1rem; }
-		.cp-census { gap: 0.55rem 1.3rem; }
-		.cp-census li + li::before { display: none; } /* wrapped lines would start with a stray diamond */
 	}
 </style>
