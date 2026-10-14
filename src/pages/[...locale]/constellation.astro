@@ -2,7 +2,6 @@
 import { i18n } from "astro:config/client";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import Base from "$layouts/Base.astro";
-import i18nit from "$i18n";
 import { people } from "$data/people";
 
 export async function getStaticPaths() {
@@ -10,71 +9,158 @@ export async function getStaticPaths() {
 }
 
 const { locale = i18n!.defaultLocale } = Astro.params;
-const t = i18nit(locale);
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 
 // Anchor ids must match the People page exactly
 const slugify = (name: string) => name.toLowerCase().replace(/[^a-z]/g, '');
+const imageUrl = (person: any) => baseUrl + person.image.replace(/^\//, '');
 const peopleWithImages = people.filter(person => person.image);
 
-// PI = sun (center), everyone else = planets on 3 orbits
+// PI = the sun at the centre; everyone else orbits on three rings, in roster order.
 const pi = peopleWithImages[0];
 const orbiters = peopleWithImages.slice(1);
-const RING_CAPACITY = [5, 7, 9];
-const ringBuckets: any[][] = RING_CAPACITY.map(() => []);
-orbiters.forEach((person, i) => {
-	let r = 0, n = i;
-	while (r < RING_CAPACITY.length - 1 && n >= RING_CAPACITY[r]) { n -= RING_CAPACITY[r]; r++; }
-	ringBuckets[r].push(person);
-});
-// Uniform avatar size across all rings — equal presence + consistent hover
-const RING_CONFIG = [
-	{ radius: 120, size: 56, duration: 90,  reverse: false, startAngle: 8 },
-	{ radius: 182, size: 56, duration: 116, reverse: true,  startAngle: 26 },
-	{ radius: 240, size: 56, duration: 142, reverse: false, startAngle: 16 },
+
+// The dial is drawn on a 640×640 grid ("dial units"); CSS maps 1 unit to --u,
+// so the whole instrument scales fluidly with its container.
+const C = 320;           // centre
+const SUN = 128;         // PI avatar diameter
+const AV = 46;           // member avatar diameter
+const RINGS = [
+	{ r: 122, dur: 140, reverse: false },
+	{ r: 190, dur: 190, reverse: true },
+	{ r: 258, dur: 240, reverse: false },
 ];
-const constellation = ringBuckets.map((members, ri) => {
-	const cfg = RING_CONFIG[ri];
+
+// Seats per ring ∝ ring circumference (largest remainder), so every orbit keeps the
+// same spacing as the roster grows; postdocs, listed first, fill the inner ring.
+const totalR = RINGS.reduce((sum, ring) => sum + ring.r, 0);
+const quota = RINGS.map(ring => orbiters.length * ring.r / totalR);
+const seats = quota.map(q => Math.floor(q));
+quota
+	.map((q, i) => ({ frac: q - Math.floor(q), i }))
+	.sort((a, b) => b.frac - a.frac)
+	.slice(0, orbiters.length - seats.reduce((a, b) => a + b, 0))
+	.forEach(({ i }) => seats[i]++);
+
+let cursor = 0;
+const orbits = RINGS.map((ring, ri) => {
+	const members = orbiters.slice(cursor, cursor + seats[ri]);
+	const first = cursor;
+	cursor += members.length;
 	const step = 360 / Math.max(members.length, 1);
+	// stagger rings so no seats line up at rest
+	const phase = step * ri / RINGS.length;
 	return {
-		...cfg,
-		members: members.map((person, mi) => ({ person, id: slugify(person.name), angle: cfg.startAngle + mi * step })),
+		...ring,
+		// stroke length for the draw-in; dial-hand length from the avatar edge to the PI bezel
+		len: Math.ceil(2 * Math.PI * ring.r) + 2,
+		spoke: ring.r - AV * 0.5 - 88,
+		members: members.map((person, mi) => ({
+			person,
+			id: slugify(person.name),
+			index: first + mi,
+			angle: +(phase + mi * step).toFixed(3),
+		})),
 	};
 });
+
+// Bezel around the PI: a tick every 5°, a longer one every 30°.
+const ticks = Array.from({ length: 72 }, (_, i) => {
+	const a = i * 5 * Math.PI / 180;
+	const major = i % 6 === 0;
+	const r0 = major ? 77 : 80, r1 = 84;
+	const pt = (r: number) => [+(C + r * Math.sin(a)).toFixed(2), +(C - r * Math.cos(a)).toFixed(2)];
+	const [x1, y1] = pt(r0), [x2, y2] = pt(r1);
+	return { x1, y1, x2, y2, major };
+});
+
+// Roster census under the dial (same role buckets as the People page).
+const census = [
+	{ n: people.filter(p => p.position === "Principal Investigator").length, one: "Principal Investigator", many: "Principal Investigators" },
+	{ n: people.filter(p => p.position === "Postdoc").length, one: "Postdoc", many: "Postdocs" },
+	{ n: people.filter(p => p.position.startsWith("PhD")).length, one: "PhD Student", many: "PhD Students" },
+	{ n: people.filter(p => /MEng|Master/.test(p.position)).length, one: "MEng Student", many: "MEng Students" },
+	{ n: people.filter(p => p.position === "Research Assistant").length, one: "Research Assistant", many: "Research Assistants" },
+].filter(group => group.n > 0);
 ---
 
 <Base title="The MARS Lab" {locale}>
 	<main class="constellation-page">
 		<header class="cp-head">
+			<p class="cp-kicker"><span>Constellation</span></p>
 			<h1 class="cp-title">The MARS Lab</h1>
-			<p class="cp-sub">Hover a face to meet the team.</p>
+			<p class="cp-sub">
+				<span class="cp-sub-hover">Hover a face to meet the team.</span>
+				<span class="cp-sub-touch">Tap a face to meet the team.</span>
+			</p>
 		</header>
 
 		<div class="constellation-wrap">
-			<div class="constellation" role="img" aria-label="MARS Lab members orbiting Prof. Jianfei Yang">
-				{RING_CONFIG.map((cfg) => (
-					<span class="orbit-ring" style={`--d:${cfg.radius * 2}px`} aria-hidden="true"></span>
-				))}
+			<div class="constellation" role="group" aria-label={`MARS Lab members orbiting ${pi.name}`}>
+				<span class="cs-plate" aria-hidden="true"></span>
 
-				<a href={getRelativeLocaleUrl(locale, `/people#${slugify(pi.name)}`)} class="sun" title={pi.name} data-no-swup>
-					<span class="sun-halo" aria-hidden="true"></span>
-					<img src={`${baseUrl}${pi.image.replace(/^\//, '')}`} alt={pi.name} loading="eager" width="128" height="128" />
-					<span class="planet-label sun-label">{pi.name}</span>
+				<svg class="cs-dial" viewBox="0 0 640 640" aria-hidden="true" focusable="false">
+					<defs>
+						<linearGradient id="cs-rim-grad" gradientUnits="userSpaceOnUse" x1="90" y1="30" x2="550" y2="610">
+							<stop offset="0" class="cs-stop-hi" />
+							<stop offset="0.5" class="cs-stop-mid" />
+							<stop offset="1" class="cs-stop-lo" />
+						</linearGradient>
+						<path id="cs-arc-top" d="M 15.5 320 A 304.5 304.5 0 0 1 624.5 320" />
+						<path id="cs-arc-bottom" d="M 15.5 320 A 304.5 304.5 0 0 0 624.5 320" />
+					</defs>
+
+					<!-- seal band: double rim outside, double rim inside, inscription between -->
+					<circle class="cs-rim cs-rim--outer" cx={C} cy={C} r="318" />
+					<circle class="cs-rim cs-rim--outer-2" cx={C} cy={C} r="314.5" />
+					<circle class="cs-rim cs-rim--inner" cx={C} cy={C} r="291" />
+					<circle class="cs-rim cs-rim--inner-2" cx={C} cy={C} r="287.5" />
+					<text class="cs-inscription" dominant-baseline="central">
+						<textPath href="#cs-arc-top" startOffset="50%" text-anchor="middle">Multimodal Embodied AI and Robotic Systems</textPath>
+					</text>
+					<text class="cs-inscription" dominant-baseline="central">
+						<textPath href="#cs-arc-bottom" startOffset="50%" text-anchor="middle">Nanyang Technological University · Singapore</textPath>
+					</text>
+					<path class="cs-stud" d="M 15.5 315.6 L 18.6 320 L 15.5 324.4 L 12.4 320 Z" />
+					<path class="cs-stud" d="M 624.5 315.6 L 627.6 320 L 624.5 324.4 L 621.4 320 Z" />
+
+					{orbits.map((orbit, ri) => (
+						<circle class={`cs-orbit cs-orbit-${ri}`} cx={C} cy={C} r={orbit.r} style={`--len:${orbit.len}; --ri:${ri}`} />
+					))}
+
+					<!-- PI bezel -->
+					<circle class="cs-halo" cx={C} cy={C} r="72" />
+					<g class="cs-ticks">
+						{ticks.map((t) => (
+							<line class:list={["cs-tick", { "cs-tick--major": t.major }]} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />
+						))}
+					</g>
+				</svg>
+
+				<a href={getRelativeLocaleUrl(locale, `/people#${slugify(pi.name)}`)} class="sun" aria-label={`${pi.name}, ${pi.position}`} data-no-swup>
+					<img src={imageUrl(pi)} alt={pi.name} width={SUN * 2} height={SUN * 2} loading="eager" decoding="async" />
+					<span class="cs-label cs-label--sun" aria-hidden="true">
+						<span class="cs-label-name">{pi.name}</span>
+						<span class="cs-label-role">{pi.position}</span>
+					</span>
 				</a>
 
-				{constellation.map((ring) => (
-					<div class:list={["orbit", { "orbit--rev": ring.reverse }]} style={`--dur:${ring.duration}s`}>
-						{ring.members.map((m) => (
+				{orbits.map((orbit, ri) => (
+					<div class:list={["orbit", `orbit-${ri}`, { "orbit--rev": orbit.reverse }]} style={`--dur:${orbit.dur}s`}>
+						{orbit.members.map((m) => (
 							<a
 								class="planet"
 								href={getRelativeLocaleUrl(locale, `/people#${m.id}`)}
-								title={m.person.name}
+								aria-label={`${m.person.name}, ${m.person.position}`}
 								data-no-swup
-								style={`--angle:${m.angle}deg; --radius:${ring.radius}px; --size:${ring.size}px; --dur:${ring.duration}s`}
+								style={`--angle:${m.angle}deg; --r:${orbit.r}; --spoke:${orbit.spoke}; --i:${m.index}`}
 							>
 								<span class="planet-spin">
-									<img src={`${baseUrl}${m.person.image.replace(/^\//, '')}`} alt={m.person.name} loading="lazy" width={ring.size} height={ring.size} />
-									<span class="planet-label">{m.person.name}</span>
+									<img src={imageUrl(m.person)} alt={m.person.name} width={AV * 2} height={AV * 2} loading="eager" decoding="async" fetchpriority="low" />
+									<span class="cs-label" aria-hidden="true">
+										<span class="cs-label-name">{m.person.name}</span>
+										<span class="cs-label-role">{m.person.position}</span>
+									</span>
 								</span>
 							</a>
 						))}
@@ -82,153 +168,322 @@ const constellation = ringBuckets.map((members, ri) => {
 				))}
 			</div>
 		</div>
+
+		<ul class="cp-census" aria-label="Lab members by role">
+			{census.map((group) => (
+				<li><b>{group.n}</b>{group.n === 1 ? group.one : group.many}</li>
+			))}
+		</ul>
 	</main>
 </Base>
 
 <style>
+	/* ===================== PAGE ===================== */
 	.constellation-page {
-		display: flex; flex-direction: column; align-items: center; justify-content: center;
-		gap: 2.2rem; min-height: 72vh; padding: 1.5rem 0 3rem;
-	}
-	.cp-head { text-align: center; display: flex; flex-direction: column; gap: 0.5rem; }
-	.cp-title { font-size: 2rem; font-weight: 700; letter-spacing: 0.01em; }
-	.cp-sub { font-size: 0.95rem; color: var(--secondary-color); max-width: 46ch; margin: 0 auto; line-height: 1.6; }
+		/* instrument palette — warm gold on porcelain */
+		--cs-gold: #C2860E;
+		--cs-ink: #8F5B0B;
+		--cs-line: rgba(194, 134, 14, 0.28);
+		--cs-line-hot: rgba(194, 134, 14, 0.78);
+		--cs-shade: 96, 62, 14;
+		--cs-plate-hi: #FFFEFA;
+		--cs-plate-lo: #F7F0E2;
+		--cs-glint: rgba(255, 255, 255, 0.85);
 
-	/* ===================== ORBITAL CONSTELLATION ===================== */
-	.constellation-wrap { position: relative; width: 540px; height: 540px; flex: 0 0 auto; }
-	/* faint warm glow behind the system — depth, not a flat graphic */
-	.constellation-wrap::before {
-		content: ""; position: absolute; inset: 5%;
-		border-radius: 50%;
-		background: radial-gradient(circle at 50% 47%, rgba(180, 83, 9, 0.06) 0%, rgba(180, 83, 9, 0) 60%);
-		pointer-events: none; z-index: 0;
+		display: flex; flex-direction: column; align-items: center;
+		gap: 1.7rem; min-height: 72vh; padding: 0.25rem 0 3.5rem;
+		overflow-x: clip;
 	}
-	.constellation { position: absolute; top: 0; left: 0; width: 540px; height: 540px; transform-origin: top left; z-index: 1; }
-
-	.orbit-ring {
-		position: absolute; top: 50%; left: 50%;
-		width: var(--d); height: var(--d);
-		border: 1px solid var(--shadow-color);
-		border-radius: 50%;
-		transform: translate(-50%, -50%);
-		opacity: 0.4;
-		pointer-events: none;
+	:global([data-theme="dark"]) .constellation-page {
+		--cs-gold: #D9A441;
+		--cs-ink: #D9A441;
+		--cs-line: rgba(217, 164, 65, 0.24);
+		--cs-line-hot: rgba(217, 164, 65, 0.8);
+		--cs-shade: 0, 0, 0;
+		--cs-plate-hi: #393834;
+		--cs-plate-lo: #2A2927;
+		--cs-glint: rgba(255, 255, 255, 0.06);
 	}
 
-	/* sun (PI) */
+	.cp-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+	.cp-kicker {
+		display: flex; align-items: center; gap: 0.9rem; margin: 0;
+		font-family: var(--monospace); font-size: 0.68rem; font-weight: 600;
+		letter-spacing: 0.34em; text-transform: uppercase; color: var(--accent);
+	}
+	.cp-kicker span { margin-right: -0.34em; } /* cancel the trailing tracking so the word centres */
+	.cp-kicker::before,
+	.cp-kicker::after { content: ""; width: 2.4rem; height: 1px; background: var(--cs-gold); opacity: 0.55; }
+	.cp-title {
+		margin: 0; font-family: "KaTeX_Main", var(--serif); font-weight: 400;
+		font-size: 2.65rem; line-height: 1.1; letter-spacing: 0.01em; color: var(--primary-color);
+	}
+	.cp-sub { margin: 0; font-size: 0.95rem; color: var(--secondary-color); }
+	.cp-sub-touch { display: none; }
+	@media (hover: none) {
+		.cp-sub-hover { display: none; }
+		.cp-sub-touch { display: inline; }
+	}
+
+	/* ===================== DIAL ===================== */
+	.constellation-wrap {
+		position: relative; flex: 0 0 auto;
+		/* fits the viewport height on laptops, the column width on phones */
+		width: min(640px, 100%, max(300px, calc(100vh - 300px)));
+		width: min(640px, 100%, max(300px, calc(100svh - 300px)));
+		aspect-ratio: 1 / 1;
+		container-type: inline-size;
+	}
+	.constellation {
+		--u: calc(100cqw / 640); /* one dial unit */
+		position: absolute; inset: 0;
+	}
+
+	/* porcelain plate with a sunray finish radiating from the PI */
+	.cs-plate {
+		position: absolute; inset: calc(2 * var(--u)); border-radius: 50%;
+		background:
+			radial-gradient(circle at 50% 50%, rgba(194, 134, 14, 0.13) 0, rgba(194, 134, 14, 0) 27%),
+			radial-gradient(circle at 50% 36%, var(--cs-plate-hi) 0%, var(--cs-plate-lo) 100%);
+		box-shadow:
+			inset 0 1px 0 var(--cs-glint),
+			0 40px 70px -48px rgba(var(--cs-shade), 0.5),
+			0 14px 30px -24px rgba(var(--cs-shade), 0.32);
+		animation: cs-fade 0.9s ease backwards;
+	}
+	.cs-plate::before {
+		content: ""; position: absolute; inset: 0; border-radius: 50%;
+		background: repeating-conic-gradient(from 0deg, rgba(var(--cs-shade), 0.032) 0deg 0.3deg, transparent 0.3deg 1.2deg);
+		-webkit-mask: radial-gradient(circle, transparent 15%, #000 36%, #000 86%, transparent 91%);
+		mask: radial-gradient(circle, transparent 15%, #000 36%, #000 86%, transparent 91%);
+	}
+
+	.cs-dial { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+	.cs-stop-hi { stop-color: #ECD394; }
+	.cs-stop-mid { stop-color: #C2860E; }
+	.cs-stop-lo { stop-color: #8A5606; }
+
+	.cs-rim { fill: none; stroke: var(--cs-gold); vector-effect: non-scaling-stroke; }
+	.cs-rim--outer { stroke: url(#cs-rim-grad); stroke-width: 1.5; }
+	.cs-rim--outer-2 { stroke-width: 0.7; opacity: 0.5; }
+	.cs-rim--inner { stroke-width: 0.9; opacity: 0.6; }
+	.cs-rim--inner-2 { stroke-width: 0.6; opacity: 0.32; }
+
+	.cs-inscription {
+		font-family: "KaTeX_Main", var(--serif); font-size: 10.5px;
+		letter-spacing: 0.34em; text-transform: uppercase;
+		fill: var(--cs-ink); dominant-baseline: central;
+		animation: cs-fade 1.4s ease 0.6s backwards;
+	}
+	.cs-stud { fill: var(--cs-gold); animation: cs-fade 1.4s ease 0.6s backwards; }
+
+	.cs-orbit {
+		fill: none; stroke: var(--cs-line); stroke-width: 1; vector-effect: non-scaling-stroke;
+		transform: rotate(-90deg); transform-origin: 320px 320px; /* draw in from 12 o'clock */
+		stroke-dasharray: var(--len);
+		animation: cs-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+		animation-delay: calc(0.2s + var(--ri) * 0.18s);
+		transition: stroke 0.35s ease;
+	}
+
+	.cs-halo { fill: none; stroke: var(--cs-gold); stroke-width: 1; opacity: 0.55; vector-effect: non-scaling-stroke; }
+	.cs-ticks { animation: cs-fade 1s ease 0.35s backwards; }
+	.cs-tick { stroke: var(--cs-gold); stroke-width: 0.8; opacity: 0.5; vector-effect: non-scaling-stroke; }
+	.cs-tick--major { stroke-width: 1.2; opacity: 0.95; }
+
+	/* ===================== PI ===================== */
 	.sun {
-		position: absolute; top: 50%; left: 50%;
-		width: 128px; height: 128px; margin: -64px 0 0 -64px;
-		border-radius: 50%; z-index: 30; display: block;
+		position: absolute; left: 50%; top: 50%; z-index: 30; display: block;
+		width: calc(128 * var(--u)); aspect-ratio: 1 / 1;
+		translate: -50% -50%;
+		border-radius: 50%;
+		transition: opacity 0.35s ease;
 	}
 	.sun img {
 		width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
 		border: 3px solid var(--background-color);
-		box-shadow: 0 6px 20px rgba(42, 42, 40, 0.20), 0 0 0 1px rgba(42, 42, 40, 0.06);
-		position: relative; z-index: 1;
-		transition: box-shadow 0.3s ease, transform 0.35s cubic-bezier(0.22, 0.68, 0.28, 1);
+		background: var(--block-color);
+		box-shadow:
+			0 0 0 1px rgba(194, 134, 14, 0.55),
+			0 20px 34px -16px rgba(var(--cs-shade), 0.55),
+			0 2px 5px rgba(var(--cs-shade), 0.18);
+		transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+		animation: cs-pop 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s backwards;
 	}
-	.sun-halo {
-		position: absolute; inset: -8px; border-radius: 50%;
-		border: 1px solid rgba(180, 83, 9, 0.30);
-		box-shadow: 0 0 0 6px rgba(180, 83, 9, 0.05);
-		pointer-events: none;
-	}
-	.sun:hover img { transform: scale(1.08); box-shadow: 0 12px 30px rgba(42, 42, 40, 0.30), 0 0 0 2px var(--accent); }
 
-	/* orbit ring container — slow drift. pointer-events:none so the full-size
-	   rotating wrapper doesn't intercept hovers/clicks for inner-ring avatars;
-	   the avatars (.planet) re-enable events on themselves. */
-	.orbit { position: absolute; inset: 0; animation: orbit-spin var(--dur) linear infinite; z-index: 20; pointer-events: none; }
+	/* ===================== ORBITS ===================== */
+	/* each ring turns slowly; pointer-events:none so a full-size rotating layer never
+	   swallows hovers meant for avatars underneath — the avatars re-enable them */
+	.orbit {
+		position: absolute; inset: 0; z-index: 20; pointer-events: none;
+		/* the second animation mirrors the rotation into --spin so labels know which way is "out" */
+		animation: cs-spin var(--dur) linear infinite, cs-spin-angle var(--dur) linear infinite;
+	}
 	.orbit--rev { animation-direction: reverse; }
 
 	.planet {
-		position: absolute; top: 50%; left: 50%;
-		width: var(--size); height: var(--size);
-		margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
-		transform: rotate(var(--angle)) translateY(calc(-1 * var(--radius)));
-		pointer-events: auto;   /* re-enable events the .orbit wrapper turned off */
+		--s: calc(46 * var(--u));
+		position: absolute; left: 50%; top: 50%;
+		width: var(--s); height: var(--s);
+		margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+		transform: rotate(var(--angle)) translateY(calc(var(--r) * var(--u) * -1));
+		border-radius: 50%;
+		pointer-events: auto;
+		outline: none;
+		transition: opacity 0.35s ease;
 	}
-	/* counter-spin keeps faces upright */
+	/* dial hand: in the planet's own (rotating) frame "down" always points at the PI */
+	.planet::before {
+		content: ""; position: absolute; left: 50%; top: 100%;
+		width: 1px; margin-left: -0.5px;
+		height: calc(var(--spoke) * var(--u));
+		background: linear-gradient(to bottom, var(--cs-gold), rgba(194, 134, 14, 0.55));
+		transform: scaleY(0); transform-origin: 50% 0;
+		transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+		pointer-events: none;
+	}
+	.planet::after {
+		content: ""; position: absolute; left: 50%; top: calc(100% + var(--spoke) * var(--u));
+		width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%;
+		background: var(--cs-gold);
+		transform: scale(0);
+		transition: transform 0.25s ease;
+		pointer-events: none;
+	}
+
+	/* counter-spin keeps faces upright (static transform covers reduced motion) */
 	.planet-spin {
 		display: block; width: 100%; height: 100%;
-		animation: planet-upright var(--dur) linear infinite;
-		transform-origin: center center;
+		transform: rotate(calc(-1 * var(--angle)));
+		animation: cs-upright var(--dur) linear infinite;
 	}
 	.orbit--rev .planet-spin { animation-direction: reverse; }
 
 	.planet img {
 		width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
 		border: 2px solid var(--background-color);
-		box-shadow: 0 2px 9px rgba(42, 42, 40, 0.14), 0 0 0 1px rgba(42, 42, 40, 0.05);
 		background: var(--block-color);
-		transition: box-shadow 0.3s ease, transform 0.35s cubic-bezier(0.22, 0.68, 0.28, 1);
+		box-shadow:
+			0 0 0 1px rgba(194, 134, 14, 0.45),
+			0 9px 16px -8px rgba(var(--cs-shade), 0.55),
+			0 1px 2px rgba(var(--cs-shade), 0.18);
+		transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+		animation: cs-pop 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+		animation-delay: calc(0.5s + var(--i) * 26ms);
 	}
 
-	.planet-label {
-		position: absolute; left: 50%; top: calc(100% + 7px);
-		transform: translateX(-50%);
+	/* ===================== LABELS ===================== */
+	.cs-label {
+		position: absolute; left: 50%; top: calc(100% + 10px); z-index: 6;
+		display: none; flex-direction: column; align-items: center; gap: 3px;
+		padding: 6px 12px 7px;
 		white-space: nowrap;
-		font-family: var(--serif); font-size: 0.72rem;
-		color: var(--primary-color);
 		background: var(--background-color);
-		border: 1px solid var(--shadow-color);
-		border-radius: 5px; padding: 1px 7px;
-		box-shadow: 0 2px 6px rgba(42, 42, 40, 0.12);
-		opacity: 0; pointer-events: none;
-		transition: opacity 0.2s ease;
-		z-index: 6;
+		border: 1px solid rgba(194, 134, 14, 0.42);
+		box-shadow: 0 14px 28px -14px rgba(var(--cs-shade), 0.5), 0 1px 2px rgba(var(--cs-shade), 0.1);
+		transform: translateX(-50%);
+		pointer-events: none;
 	}
-	.sun-label { font-size: 0.84rem; font-weight: 700; top: calc(100% + 11px); }
-
-	@keyframes orbit-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
-	@keyframes planet-upright {
-		from { transform: rotate(calc(-1 * var(--angle))); }
-		to   { transform: rotate(calc(-1 * var(--angle) - 360deg)); }
+	.cs-label--sun { top: calc(100% + 16px); }
+	/* member labels open radially outward — never over the hand or the PI.
+	   --t is the live direction from the centre to the face (clockwise from 12 o'clock). */
+	@supports (top: calc(1px * sin(1deg))) {
+		.planet .cs-label {
+			--t: calc(var(--angle) + var(--spin));
+			--lr: calc(var(--s) * 0.61 + 7px);
+			left: calc(50% + sin(var(--t)) * var(--lr));
+			top: calc(50% - cos(var(--t)) * var(--lr));
+			transform: translate(calc(-50% + 50% * sin(var(--t))), calc(-50% - 50% * cos(var(--t))));
+		}
+	}
+	.cs-label-name { font-family: "KaTeX_Main", var(--serif); font-size: 15px; line-height: 1.15; color: var(--primary-color); }
+	.cs-label-role {
+		font-family: var(--monospace); font-size: 9px; font-weight: 600; line-height: 1.2;
+		letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
 	}
 
-	/* hover: pause the drift over any avatar, dim the rest, lift the chosen one.
-	   sun + planets are treated uniformly so the centre behaves like every node. */
-	.constellation:has(.planet:hover) .orbit,
-	.constellation:has(.planet:hover) .planet-spin,
-	.constellation:has(.sun:hover) .orbit,
-	.constellation:has(.sun:hover) .planet-spin,
-	.constellation:focus-within .orbit,
-	.constellation:focus-within .planet-spin { animation-play-state: paused; }
-
-	.constellation:has(.planet:hover) .planet,
-	.constellation:has(.sun:hover) .planet,
-	.constellation:focus-within .planet { opacity: 0.35; transition: opacity 0.3s ease; }
-	.constellation:has(.planet:hover) .sun { opacity: 0.35; transition: opacity 0.3s ease; }
-	.constellation:has(.planet:hover) .planet:hover,
-	.constellation:focus-within .planet:focus-visible { opacity: 1; z-index: 40; }
-
+	/* ===================== INTERACTION ===================== */
+	/* hover/focus anywhere: the whole instrument stops */
+	.constellation:has(.planet:hover, .planet:focus-visible, .sun:hover, .sun:focus-visible) :is(.orbit, .planet-spin) {
+		animation-play-state: paused;
+	}
+	/* the chosen face lifts, its hand sweeps to the PI, its orbit lights up, the rest recede */
 	.planet:hover img,
 	.planet:focus-visible img {
 		transform: scale(1.22);
-		box-shadow: 0 10px 26px rgba(42, 42, 40, 0.24), 0 0 0 2px var(--accent);
+		box-shadow:
+			0 0 0 1.5px var(--cs-gold),
+			0 16px 26px -10px rgba(var(--cs-shade), 0.55),
+			0 2px 4px rgba(var(--cs-shade), 0.2);
 	}
-	.planet:hover .planet-label,
-	.planet:focus-visible .planet-label,
-	.sun:hover .planet-label,
-	.sun:focus-visible .planet-label { opacity: 1; }
+	.planet:hover::before,
+	.planet:focus-visible::before { transform: scaleY(1); }
+	.planet:is(:hover, :focus-visible)::after { transform: scale(1); transition-delay: 0.35s; }
+	:is(.planet, .sun):is(:hover, :focus-visible) .cs-label { display: flex; animation: cs-label-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+	.planet:is(:hover, :focus-visible) { z-index: 2; }
+	.orbit:has(.planet:hover, .planet:focus-visible) { z-index: 35; } /* label above the PI and other rings */
+
+	.constellation:has(.planet:hover, .planet:focus-visible) .planet:not(:hover, :focus-visible) { opacity: 0.26; }
+	.constellation:has(.planet:hover, .planet:focus-visible) .sun { opacity: 0.72; }
+	.constellation:has(.sun:hover, .sun:focus-visible) .planet { opacity: 0.5; }
+	.sun:is(:hover, :focus-visible) img {
+		transform: scale(1.04);
+		box-shadow:
+			0 0 0 1.5px var(--cs-gold),
+			0 24px 40px -16px rgba(var(--cs-shade), 0.6),
+			0 2px 5px rgba(var(--cs-shade), 0.2);
+	}
+	.sun:focus-visible { outline: none; }
+
+	.constellation:has(.orbit-0 .planet:is(:hover, :focus-visible)) .cs-orbit-0,
+	.constellation:has(.orbit-1 .planet:is(:hover, :focus-visible)) .cs-orbit-1,
+	.constellation:has(.orbit-2 .planet:is(:hover, :focus-visible)) .cs-orbit-2 { stroke: var(--cs-line-hot); }
+
+	/* ===================== CENSUS ===================== */
+	.cp-census {
+		display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline;
+		gap: 0.5rem 0; margin: 0.4rem 0 0; padding: 0; list-style: none;
+		font-family: var(--monospace); font-size: 0.66rem; font-weight: 600;
+		letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary-color);
+	}
+	.cp-census li { display: inline-flex; align-items: baseline; gap: 0.5em; }
+	.cp-census li + li::before {
+		content: ""; align-self: center; width: 4px; height: 4px; margin: 0 1.1rem;
+		background: var(--cs-gold); transform: rotate(45deg); opacity: 0.8;
+	}
+	.cp-census b {
+		font-family: "KaTeX_Main", var(--serif); font-size: 1.2rem; font-weight: 400;
+		letter-spacing: 0; color: var(--accent);
+	}
+
+	/* ===================== MOTION ===================== */
+	@property --spin { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+	@keyframes cs-spin { to { transform: rotate(360deg); } }
+	@keyframes cs-spin-angle { from { --spin: 0deg; } to { --spin: 360deg; } }
+	@keyframes cs-label-in { from { opacity: 0; scale: 0.94; } }
+	@keyframes cs-upright {
+		from { transform: rotate(calc(-1 * var(--angle))); }
+		to   { transform: rotate(calc(-1 * var(--angle) - 360deg)); }
+	}
+	@keyframes cs-pop { from { opacity: 0; scale: 0.4; } }
+	@keyframes cs-fade { from { opacity: 0; } }
+	@keyframes cs-draw { from { stroke-dashoffset: var(--len); } }
 
 	@media (prefers-reduced-motion: reduce) {
-		.orbit, .planet-spin { animation: none !important; }
+		.orbit, .planet-spin, .planet img, .sun img,
+		.cs-plate, .cs-orbit, .cs-inscription, .cs-stud, .cs-ticks { animation: none !important; }
+		.planet::before, .planet::after { transition: none; }
+		.cs-label { animation: none !important; }
 	}
 
-	/* responsive scaling */
-	@media (max-width: 1000px) {
-		.constellation-wrap { width: 432px; height: 432px; }
-		.constellation { transform: scale(0.8); }
+	/* ===================== SMALL DIALS ===================== */
+	@container (max-width: 470px) {
+		.cs-inscription, .cs-stud, .cs-tick:not(.cs-tick--major) { display: none; }
 	}
 	@media (max-width: 768px) {
-		.constellation-wrap { width: 356px; height: 356px; }
-		.constellation { transform: scale(0.66); }
-		.cp-title { font-size: 1.6rem; }
-	}
-	@media (max-width: 480px) {
-		.constellation-wrap { width: 281px; height: 281px; }
-		.constellation { transform: scale(0.52); }
+		.constellation-page { gap: 1.4rem; }
+		.cp-title { font-size: 2.1rem; }
+		.cp-census { gap: 0.55rem 1.3rem; }
+		.cp-census li + li::before { display: none; } /* wrapped lines would start with a stray diamond */
 	}
 </style>
