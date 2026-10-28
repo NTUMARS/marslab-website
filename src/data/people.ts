@@ -415,6 +415,19 @@ export const people = [
 			linkedin: "https://www.linkedin.com/in/zhuoyuan-yu-135245291/"
 		}
 	},
+	{
+		name: "Zhenghao Chi",
+		position: "Research Assistant",
+		image: "/people/zhenghao-chi.jpg",
+		photoPos: "30% 15%",
+		bio: "Zhenghao Chi is a full-time Research Assistant at the NTU MARS Lab, advised by Prof. Jianfei Yang. He holds a BSc in Statistics from Fudan University and an MSc in Artificial Intelligence from the University of Chicago.",
+		research: "His research focuses on two questions: (1) Learning from limited action data: How can we leverage existing foundation models to learn generalizable robot policies when continuous action labels are scarce? (2) Scalable visual-tactile data collection: How can we collect visual-tactile data anywhere in the wild without compromising human work efficiency?",
+		links: {
+			website: "https://felix-zhenghao.github.io/",
+			email: "felixchi422@gmail.com",
+			twitter: "https://x.com/FelixChi422"
+		}
+	},
 ];
 
 // Current students listed by name only (no photo/bio), grouped by degree level.
