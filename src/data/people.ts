@@ -428,6 +428,20 @@ export const people = [
 			twitter: "https://x.com/FelixChi422"
 		}
 	},
+	// Visiting Scholars
+	{
+		name: "Yuxuan Hu",
+		position: "Visiting Ph.D. Student",
+		image: "/people/hu-yuxuan.jpg",
+		bio: "Yuxuan Hu is a Visiting Ph.D. Student at Nanyang Technological University, working with Prof. Jianfei Yang. She is pursuing her Ph.D. at Fudan University.",
+		research: "Her recent research focuses on agentic robots, exploring how force and tactile feedback can inform reasoning and decision-making for contact-rich manipulation. Her interests also include multimodal perception and human–robot interaction.",
+		links: {
+			website: "https://yuxuanhu9.github.io/",
+			email: "yuxuanhu2105@gmail.com",
+			scholar: "https://scholar.google.com/citations?user=R5uN94kAAAAJ",
+			linkedin: "https://www.linkedin.com/in/yuxuanhu9"
+		}
+	},
 ];
 
 // Current students listed by name only (no photo/bio), grouped by degree level.
