@@ -428,6 +428,21 @@ export const people = [
 			twitter: "https://x.com/FelixChi422"
 		}
 	},
+	{
+		name: "Xuezhou Xu",
+		position: "Research Assistant",
+		image: "/people/xuezhou-xu.jpg",
+		photoPos: "50% 12%",
+		bio: "Xuezhou Xu is a research assistant and incoming PhD student in the MARS Lab at Nanyang Technological University (NTU), working with Prof. Jianfei Yang. He received his B.Sc. in Mathematics with Highest Distinction, with a minor in Computer Science, from the National University of Singapore (NUS) in 2025. His research is supported by A*STAR Graduate Scholarship (Computing).",
+		research: "His research interests lie in general robot learning, with a current focus on world models that help robots understand how the world works, so they can predict, plan, and act more intelligently. His long-term goal is to understand the fundamental logic of cognition from the perspectives of cognitive science, psychology and biology, and use those insights to build the next generation of robot brains.",
+		links: {
+			website: "https://xuxuezhou.github.io/",
+			email: "xxz020928@gmail.com",
+			scholar: "https://scholar.google.com/citations?user=ivTfnKgAAAAJ&hl=en",
+			github: "https://github.com/xuxuezhou",
+			linkedin: "https://www.linkedin.com/in/xuezhou-xu-69a14122a/"
+		}
+	},
 	// Visiting Scholars
 	{
 		name: "Yuxuan Hu",
