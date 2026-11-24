@@ -102,8 +102,17 @@ export const sections: ResearchSection[] = [
 		num: "03",
 		title: "Agentic Robots",
 		tagline: "Robots that reason, plan, and act on their own through long-horizon physical tasks.",
-		// No published work in this direction yet — the heading stands alone.
-		groups: [],
+		groups: [
+			{
+				items: [
+					{
+						ref: "contact-harness",
+						display: "Contact Harness: VLM Agents for Contact-Rich Manipulation",
+						blurb: "Letting a frozen VLM agent read force and touch alongside vision, so it can judge contact and act through contact-rich tasks.",
+					},
+				],
+			},
+		],
 	},
 	{
 		id: "human-robot-interaction",
