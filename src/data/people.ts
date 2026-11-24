@@ -275,7 +275,10 @@ export const people = [
 		bio: "Bofan Lyu is a PhD student at the NTU MARS Lab, supervised by Prof. Jianfei Yang.",
 		research: "His research interests include humanoid loco-manipulation and human-centered robotics.",
 		links: {
-			email: "lyub0002@e.ntu.edu.sg"
+			website: "https://blyu413.github.io/",
+			email: "lyub0002@e.ntu.edu.sg",
+			scholar: "https://scholar.google.com/citations?user=a3dHou4AAAAJ&hl=en",
+			linkedin: "https://www.linkedin.com/in/bofan-lyu/"
 		}
 	},
 	{
